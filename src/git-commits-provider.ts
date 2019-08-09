@@ -1,4 +1,3 @@
-import * as md5 from 'md5';
 import * as vscode from 'vscode';
 import { GitExtension, Repository } from './git';
 
@@ -14,7 +13,6 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 			if (this.wasRefresh) {
 				this.wasRefresh = false;
 			} else {
-				console.log('refresh!');
 				this.refresh();
 			}
 		});
@@ -34,10 +32,10 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 
 		if (gitExtension && gitExtension.isActive) {
 			const git = gitExtension.exports.getAPI(1);
-			
-			if (git.repositories.length === 1) {
-				const repository = git.repositories[0];
 
+			const repository = git.repositories[0];
+			
+			if (repository) {
 				if (!this.observer) {
 					this._observeRepositoryState(repository);
 				}
@@ -58,7 +56,7 @@ export class Commit extends vscode.TreeItem {
 
 		if (email) {
 			this.tooltip = email;
-			this.iconPath = vscode.Uri.parse(`https://www.gravatar.com/avatar/${md5(email)}?s=20`);
+			this.iconPath = vscode.Uri.parse(`https://avatars.githubusercontent.com/u/e?email=${email}&s=20`)
 		}
 	}
 }

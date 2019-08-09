@@ -29,17 +29,17 @@
 				"command": "gitCommits.refresh",
 				"title": "Refresh",
 				"icon": {
-          "light": "resources/icons/light/refresh.svg",
-          "dark": "resources/icons/dark/refresh.svg"
-        }
+					"light": "resources/icons/light/refresh.svg",
+					"dark": "resources/icons/dark/refresh.svg"
+				}
 			},
 			{
 				"command": "git.undoCommit",
 				"title": "Undo last commit",
 				"icon": {
-          "light": "resources/icons/light/clean.svg",
-          "dark": "resources/icons/dark/clean.svg"
-        }
+					"light": "resources/icons/light/clean.svg",
+					"dark": "resources/icons/dark/clean.svg"
+				}
 			}
 		],
 		"menus": {
@@ -68,14 +68,13 @@
 		"test": "npm run compile && node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
-		"@types/md5": "^2.1.33",
-		"@types/mocha": "^2.2.42",
-		"@types/node": "^10.12.21",
-		"tslint": "^5.12.1",
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.28"
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.7.1",
+		"tslint": "^5.18.0",
+		"typescript": "^3.5.3",
+		"vscode": "^1.1.36"
 	},
 	"dependencies": {
-		"md5": "^2.2.1"
+		"node-fetch": "^2.6.0"
 	}
 }
