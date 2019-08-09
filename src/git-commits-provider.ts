@@ -5,11 +5,21 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 	private _onDidChangeTreeData: vscode.EventEmitter<Commit | undefined> = new vscode.EventEmitter<Commit | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<Commit | undefined> = this._onDidChangeTreeData.event;
 	
-	private observer?: vscode.Disposable;
+	private repoObserver?: vscode.Disposable;
+	private stateObserver?: vscode.Disposable;
 	private wasRefresh = true;
 
+	_observeSelectedRepository(repository: Repository) {
+		return this.repoObserver = repository.ui.onDidChange((a) => {
+			if (this.repoObserver) this.repoObserver.dispose();
+			this.refresh()
+		});
+	};
+
 	_observeRepositoryState(repository: Repository) {
-		this.observer = repository.state.onDidChange(() => {
+		if (this.stateObserver) this.stateObserver.dispose();
+		
+		this.stateObserver = repository.state.onDidChange(() => {
 			if (this.wasRefresh) {
 				this.wasRefresh = false;
 			} else {
@@ -19,6 +29,8 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 	}
 
 	refresh(): void {
+		console.log('refresh');
+		
 		this.wasRefresh = true;
 		this._onDidChangeTreeData.fire();
 	}
@@ -32,13 +44,14 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 
 		if (gitExtension && gitExtension.isActive) {
 			const git = gitExtension.exports.getAPI(1);
-
-			const repository = git.repositories[0];
+			
+			git.repositories.forEach((repo) => this._observeSelectedRepository(repo));
+			
+			const repository = git.repositories.find(r => r.ui.selected);
 			
 			if (repository) {
-				if (!this.observer) {
-					this._observeRepositoryState(repository);
-				}
+				this._observeSelectedRepository(repository)
+				this._observeRepositoryState(repository);
 
 				return repository.log().then((logs) => {
 					return logs.map((log) => new Commit(log.message, log.hash, log.authorEmail));

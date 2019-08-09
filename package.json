@@ -20,7 +20,8 @@
 			"scm": [
 				{
 					"id": "gitCommits",
-					"name": "Commits"
+					"name": "Commits",
+					"when": "gitOpenRepositoryCount != 0"
 				}
 			]
 		},
