@@ -2,7 +2,7 @@
 	"name": "git-commits",
 	"displayName": "Git commits",
 	"description": "Adds list of commits in Git tab",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"publisher": "Exelord",
 	"repository": "https://github.com/Exelord/git-commits",
 	"engines": {
