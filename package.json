@@ -74,8 +74,5 @@
 		"tslint": "^5.18.0",
 		"typescript": "^3.5.3",
 		"vscode": "^1.1.36"
-	},
-	"dependencies": {
-		"node-fetch": "^2.6.0"
 	}
 }

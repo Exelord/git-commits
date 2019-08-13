@@ -5,23 +5,46 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 	private _onDidChangeTreeData: vscode.EventEmitter<Commit | undefined> = new vscode.EventEmitter<Commit | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<Commit | undefined> = this._onDidChangeTreeData.event;
 	
-	private repoObserver?: vscode.Disposable;
 	private stateObserver?: vscode.Disposable;
-	private wasRefresh = true;
+	private didLog = true;
+	private _selectedRepository?: Repository;
 
-	_observeSelectedRepository(repository: Repository) {
-		return this.repoObserver = repository.ui.onDidChange((a) => {
-			if (this.repoObserver) this.repoObserver.dispose();
-			this.refresh()
-		});
-	};
+	get selectedRepository(): Repository | undefined {
+		return this._selectedRepository;
+	}
+
+	set selectedRepository(repository: Repository | undefined) {
+		if (repository && repository.ui.selected) {
+			this._selectedRepository = repository;
+			this._observeRepositoryState(repository);
+			this.refresh();
+		}
+	}
+
+	constructor() {
+		const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
+
+		if (gitExtension && gitExtension.isActive) {
+			const git = gitExtension.exports.getAPI(1);
+
+			git.repositories.forEach((repository) => {
+				this.selectedRepository = repository;
+				repository.ui.onDidChange(() => this.selectedRepository = repository);
+			})
+			
+			git.onDidOpenRepository((repository) => {
+				this.selectedRepository = repository;
+				repository.ui.onDidChange(() => this.selectedRepository = repository);
+			})
+		}
+	}
 
 	_observeRepositoryState(repository: Repository) {
 		if (this.stateObserver) this.stateObserver.dispose();
 		
 		this.stateObserver = repository.state.onDidChange(() => {
-			if (this.wasRefresh) {
-				this.wasRefresh = false;
+			if (this.didLog) {
+				this.didLog = false;
 			} else {
 				this.refresh();
 			}
@@ -29,9 +52,7 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 	}
 
 	refresh(): void {
-		console.log('refresh');
-		
-		this.wasRefresh = true;
+		this.didLog = true;
 		this._onDidChangeTreeData.fire();
 	}
 
@@ -39,27 +60,12 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 		return element;
 	}
 
-	getChildren(element?: Commit): Thenable<Commit[]> {
-		const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
+	async getChildren(element?: Commit): Promise<Commit[]> {
+		if (!this.selectedRepository) return [];
 
-		if (gitExtension && gitExtension.isActive) {
-			const git = gitExtension.exports.getAPI(1);
-			
-			git.repositories.forEach((repo) => this._observeSelectedRepository(repo));
-			
-			const repository = git.repositories.find(r => r.ui.selected);
-			
-			if (repository) {
-				this._observeSelectedRepository(repository)
-				this._observeRepositoryState(repository);
-
-				return repository.log().then((logs) => {
-					return logs.map((log) => new Commit(log.message, log.hash, log.authorEmail));
-				});
-			}
-		}
-
-		return Promise.resolve([]);
+		const logs = await this.selectedRepository.log();
+		
+		return logs.map((log) => new Commit(log.message, log.hash, log.authorEmail));
 	}
 }
 
