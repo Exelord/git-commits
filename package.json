@@ -5,6 +5,7 @@
 	"version": "0.3.0",
 	"publisher": "Exelord",
 	"repository": "https://github.com/Exelord/git-commits",
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.32.0"
 	},
