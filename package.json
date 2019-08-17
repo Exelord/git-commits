@@ -1,16 +1,28 @@
 {
 	"name": "git-commits",
-	"displayName": "Git commits",
-	"description": "Adds list of commits in Git tab",
+	"displayName": "Git Commits",
+	"description": "Adds list of last commits in source control tab",
 	"version": "0.3.0",
 	"publisher": "Exelord",
 	"repository": "https://github.com/Exelord/git-commits",
 	"license": "MIT",
+	"icon": "icon.png",
+	"bugs": {
+		"url": "https://github.com/Exelord/git-commits/issues"
+	},
+	"homepage": "https://github.com/Exelord/git-commits#readme",
 	"engines": {
 		"vscode": "^1.32.0"
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"git",
+		"commits",
+		"list",
+		"atom",
+		"vscode"
 	],
 	"activationEvents": [
 		"onView:gitCommits"

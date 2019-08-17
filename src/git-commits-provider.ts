@@ -5,10 +5,10 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 	private _onDidChangeTreeData: vscode.EventEmitter<Commit | undefined> = new vscode.EventEmitter<Commit | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<Commit | undefined> = this._onDidChangeTreeData.event;
 	
-	private stateObserver?: vscode.Disposable;
-	private didLog = true;
+	private logRefresh = true;
+	private _stateObserver?: vscode.Disposable;
 	private _selectedRepository?: Repository;
-
+	
 	get selectedRepository(): Repository | undefined {
 		return this._selectedRepository;
 	}
@@ -39,20 +39,7 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 		}
 	}
 
-	_observeRepositoryState(repository: Repository) {
-		if (this.stateObserver) this.stateObserver.dispose();
-		
-		this.stateObserver = repository.state.onDidChange(() => {
-			if (this.didLog) {
-				this.didLog = false;
-			} else {
-				this.refresh();
-			}
-		});
-	}
-
 	refresh(): void {
-		this.didLog = true;
 		this._onDidChangeTreeData.fire();
 	}
 
@@ -62,10 +49,23 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 
 	async getChildren(element?: Commit): Promise<Commit[]> {
 		if (!this.selectedRepository) return [];
-
+		
+		this.logRefresh = true;
 		const logs = await this.selectedRepository.log();
 		
 		return logs.map((log) => new Commit(log.message, log.hash, log.authorEmail));
+	}
+
+	_observeRepositoryState(repository: Repository) {
+		if (this._stateObserver) this._stateObserver.dispose();
+		
+		this._stateObserver = repository.state.onDidChange(() => {
+			if (this.logRefresh) {
+				this.logRefresh = false;
+			} else {
+				this.refresh();
+			}
+		});
 	}
 }
 

@@ -1,10 +1,22 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Exelord/git-commits/master/icon.png" alt="logo"/>
+</p>
+
 # git-commits
 
-Lists commits in SCM tab like in Atom editor
+List last commits in SCM tab like in Atom editor. No need for git log, quick overview for current branch.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Exelord/git-commits/master/example.png" alt="example"/>
+</p>
 
 ## Features
 
-- lists commits
+- list commits
 - allow to undo last commit
+
+## Upcoming
+
+- Preview commit changes
 
 **Enjoy!**
