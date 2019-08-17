@@ -1,91 +1,105 @@
 {
-	"name": "git-commits",
-	"displayName": "Git Commits",
-	"description": "Adds list of last commits in source control tab",
-	"version": "0.3.0",
-	"publisher": "Exelord",
-	"repository": "https://github.com/Exelord/git-commits",
-	"license": "MIT",
-	"icon": "icon.png",
-	"bugs": {
-		"url": "https://github.com/Exelord/git-commits/issues"
-	},
-	"homepage": "https://github.com/Exelord/git-commits#readme",
-	"engines": {
-		"vscode": "^1.32.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"git",
-		"commits",
-		"list",
-		"atom",
-		"vscode"
-	],
-	"activationEvents": [
-		"onView:gitCommits"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"views": {
-			"scm": [
-				{
-					"id": "gitCommits",
-					"name": "Commits",
-					"when": "gitOpenRepositoryCount != 0"
-				}
-			]
-		},
-		"commands": [
-			{
-				"command": "gitCommits.refresh",
-				"title": "Refresh",
-				"icon": {
-					"light": "resources/icons/light/refresh.svg",
-					"dark": "resources/icons/dark/refresh.svg"
-				}
-			},
-			{
-				"command": "git.undoCommit",
-				"title": "Undo last commit",
-				"icon": {
-					"light": "resources/icons/light/clean.svg",
-					"dark": "resources/icons/dark/clean.svg"
-				}
-			}
-		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "gitCommits.refresh",
-					"when": "view == gitCommits",
-					"group": "navigation"
-				},
-				{
-					"command": "git.undoCommit",
-					"when": "view == gitCommits",
-					"group": "navigation"
-				}
-			]
-		}
-	},
-	"extensionDependencies": [
-		"vscode.git"
-	],
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
-	},
-	"devDependencies": {
-		"@types/mocha": "^5.2.7",
-		"@types/node": "^12.7.1",
-		"tslint": "^5.18.0",
-		"typescript": "^3.5.3",
-		"vscode": "^1.1.36"
-	}
+  "name": "git-commits",
+  "displayName": "Git Commits",
+  "description": "Adds list of last commits in source control tab",
+  "version": "0.3.0",
+  "publisher": "Exelord",
+  "repository": "https://github.com/Exelord/git-commits",
+  "license": "MIT",
+  "icon": "icon.png",
+  "bugs": {
+    "url": "https://github.com/Exelord/git-commits/issues"
+  },
+  "homepage": "https://github.com/Exelord/git-commits#readme",
+  "engines": {
+    "vscode": "^1.32.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "commits",
+    "list",
+    "atom",
+    "vscode"
+  ],
+  "activationEvents": [
+    "onView:gitCommits"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "scm": [
+        {
+          "id": "gitCommits",
+          "name": "Commits",
+          "when": "gitOpenRepositoryCount != 0"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "gitCommits.refresh",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/icons/light/refresh.svg",
+          "dark": "resources/icons/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "git.undoCommit",
+        "title": "Undo last commit",
+        "icon": {
+          "light": "resources/icons/light/clean.svg",
+          "dark": "resources/icons/dark/clean.svg"
+        }
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "gitCommits.refresh",
+          "when": "view == gitCommits",
+          "group": "navigation"
+        },
+        {
+          "command": "git.undoCommit",
+          "when": "view == gitCommits",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "extensionDependencies": [
+    "vscode.git"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test",
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.2",
+    "release-it": "^12.3.5",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3",
+    "vscode": "^1.1.36"
+  },
+  "release-it": {
+    "git": {
+      "tagName": "v${version}",
+      "commitMessage": "v${version}"
+    },
+    "npm": {
+      "publish": false
+    },
+    "github": {
+      "release": true
+    }
+  }
 }

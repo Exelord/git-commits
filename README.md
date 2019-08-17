@@ -13,7 +13,7 @@ List last commits in SCM tab like in Atom editor. No need for git log, quick ove
 ## Features
 
 - list commits
-- allow to undo last commit
+- quickly undo last commit
 
 ## Upcoming
 
