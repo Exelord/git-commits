@@ -103,7 +103,7 @@
       "release": true
     },
     "hooks": {
-      "after:release": "vsce publish ${version}"
+      "after:release": "vsce publish"
     }
   }
 }
