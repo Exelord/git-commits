@@ -75,7 +75,17 @@ export class Commit extends vscode.TreeItem {
 
 		if (email) {
 			this.tooltip = email;
-			this.iconPath = vscode.Uri.parse(`https://avatars.githubusercontent.com/u/e?email=${email}&s=20`)
+			this.iconPath = vscode.Uri.parse(this.avatarUrl(email))
+		}
+	}
+
+	private avatarUrl(email: string) {
+		const match = email.match(/^(\d+)\+[^@]+@users.noreply.github.com$/);
+
+		if (match) {
+			return `https://avatars.githubusercontent.com/u/${match[1]}?s=20`;
+		} else {
+			return `https://avatars.githubusercontent.com/u/e?email=${encodeURIComponent(email)}&s=20`;
 		}
 	}
 }
