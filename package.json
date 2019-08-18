@@ -40,14 +40,6 @@
     },
     "commands": [
       {
-        "command": "gitCommits.refresh",
-        "title": "Refresh",
-        "icon": {
-          "light": "resources/icons/light/refresh.svg",
-          "dark": "resources/icons/dark/refresh.svg"
-        }
-      },
-      {
         "command": "git.undoCommit",
         "title": "Undo last commit",
         "icon": {
@@ -58,11 +50,6 @@
     ],
     "menus": {
       "view/title": [
-        {
-          "command": "gitCommits.refresh",
-          "when": "view == gitCommits",
-          "group": "navigation"
-        },
         {
           "command": "git.undoCommit",
           "when": "view == gitCommits",
