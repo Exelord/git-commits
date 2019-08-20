@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
-import { GitExtension, Repository } from './git';
+import { GitExtension, Repository } from './ext/git';
+import { CommitNode } from './commit-node';
+import { log } from './git';
 
-export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
-	private _onDidChangeTreeData: vscode.EventEmitter<Commit | undefined> = new vscode.EventEmitter<Commit | undefined>();
-	readonly onDidChangeTreeData: vscode.Event<Commit | undefined> = this._onDidChangeTreeData.event;
+export class GitCommitsProvider implements vscode.TreeDataProvider<CommitNode> {
+	private _onDidChangeTreeData: vscode.EventEmitter<CommitNode | undefined> = new vscode.EventEmitter<CommitNode | undefined>();
+	readonly onDidChangeTreeData: vscode.Event<CommitNode | undefined> = this._onDidChangeTreeData.event;
 	
-	private logRefresh = true;
 	private _stateObserver?: vscode.Disposable;
 	private _selectedRepository?: Repository;
 	
@@ -43,49 +44,23 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<Commit> {
 		this._onDidChangeTreeData.fire();
 	}
 
-	getTreeItem(element: Commit): vscode.TreeItem {
+	getTreeItem(element: CommitNode): vscode.TreeItem {
 		return element;
 	}
 
-	async getChildren(element?: Commit): Promise<Commit[]> {
+	async getChildren(element?: CommitNode): Promise<CommitNode[]> {
 		if (!this.selectedRepository) return [];
 		
-		this.logRefresh = true;
-		const logs = await this.selectedRepository.log();
+		const logs = await log(this.selectedRepository)
 		
-		return logs.map((log) => new Commit(log.message, log.hash, log.authorEmail));
+		return logs.map((log) => new CommitNode(log));
 	}
 
 	_observeRepositoryState(repository: Repository) {
 		if (this._stateObserver) this._stateObserver.dispose();
 		
 		this._stateObserver = repository.state.onDidChange(() => {
-			if (this.logRefresh) {
-				this.logRefresh = false;
-			} else {
-				this.refresh();
-			}
+			this.refresh();
 		});
-	}
-}
-
-export class Commit extends vscode.TreeItem {
-	constructor(message: string, hash: string, email?: string) {
-		super(message);
-
-		if (email) {
-			this.tooltip = email;
-			this.iconPath = vscode.Uri.parse(this.avatarUrl(email))
-		}
-	}
-
-	private avatarUrl(email: string) {
-		const match = email.match(/^(\d+)\+[^@]+@users.noreply.github.com$/);
-
-		if (match) {
-			return `https://avatars.githubusercontent.com/u/${match[1]}?s=20`;
-		} else {
-			return `https://avatars.githubusercontent.com/u/e?email=${encodeURIComponent(email)}&s=20`;
-		}
 	}
 }

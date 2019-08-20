@@ -70,6 +70,7 @@
     "release": "release-it"
   },
   "devDependencies": {
+    "@types/luxon": "^1.15.2",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.2",
     "release-it": "^12.3.5",
@@ -92,5 +93,8 @@
     "hooks": {
       "after:release": "vsce publish"
     }
+  },
+  "dependencies": {
+    "luxon": "^1.17.2"
   }
 }
