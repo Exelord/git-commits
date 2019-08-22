@@ -49,11 +49,13 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<CommitNode> {
 	}
 
 	async getChildren(element?: CommitNode): Promise<CommitNode[]> {
-		if (!this.selectedRepository) return [];
+		const repository = this.selectedRepository;
+
+		if (!repository) return [];
 		
-		const logs = await log(this.selectedRepository)
+		const logs = await log(repository);
 		
-		return logs.map((log) => new CommitNode(log));
+		return logs.map((log) => new CommitNode(log, repository));
 	}
 
 	_observeRepositoryState(repository: Repository) {

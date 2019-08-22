@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "@types/luxon": "^1.15.2",
+    "@types/md5": "^2.1.33",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.2",
     "release-it": "^12.3.5",
@@ -95,6 +96,7 @@
     }
   },
   "dependencies": {
-    "luxon": "^1.17.2"
+    "luxon": "^1.17.2",
+    "md5": "^2.2.1"
   }
 }
