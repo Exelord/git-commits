@@ -29,9 +29,13 @@ export class CommitNode extends vscode.TreeItem {
 		return files.sort((a, b) => {
 			const aParts = a.split("/");
 			const bParts = b.split("/");
-		
+
 			if (aParts.length < bParts.length) return 1;
-			return aParts.find((aPart, index) => aPart > bParts[index]) ? -1 : 1;
+			if (aParts.length > bParts.length) return -1;
+		
+			return aParts.find((aPart, index) => {
+				return aPart < bParts[index]
+			}) ? -1 : 1;
 		}).map((path) => new PathNode(path, this));
 	}
 
