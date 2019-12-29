@@ -3,13 +3,17 @@ import { Commit } from './git';
 import { DateTime } from 'luxon';
 import { Repository, Remote } from './ext/git';
 import * as md5 from 'md5';
+import { diff } from './git';
+import { PathNode } from './path-node';
 
 export class CommitNode extends vscode.TreeItem {
-	private repository: Repository;
+	repository: Repository;
+	commit: Commit;
 
 	constructor(commit: Commit, repository: Repository) {
-		super(commit.subject);
+		super(commit.subject, vscode.TreeItemCollapsibleState.Collapsed);
 		
+		this.commit = commit;
 		this.repository = repository;
 		this.description = DateTime.fromRFC2822(commit.date).toRelative({ locale: vscode.env.language }) || '';
 
@@ -17,6 +21,18 @@ export class CommitNode extends vscode.TreeItem {
 			this.tooltip = commit.authorEmail;
 			this.iconPath = vscode.Uri.parse(this.avatarUrl(commit.authorEmail))
 		}
+	}
+
+	async getChildren(): Promise<vscode.TreeItem[]> {
+		const files = await diff(this.repository, this.commit);
+		
+		return files.sort((a, b) => {
+			const aParts = a.split("/");
+			const bParts = b.split("/");
+		
+			if (aParts.length < bParts.length) return 1;
+			return aParts.find((aPart, index) => aPart > bParts[index]) ? -1 : 1;
+		}).map((path) => new PathNode(path, this));
 	}
 
 	private get remoteHost(): string | undefined {

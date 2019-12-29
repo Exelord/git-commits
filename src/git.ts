@@ -21,8 +21,8 @@ function parseGitCommit(raw: string): Commit | null | undefined {
   return match && match.groups as Commit;
 }
 
-export async function log(repository: Repository): Promise<Commit[]> {
-  const args = ['log', '-n 15', '--pretty=format:::commit::%n%H%n::commit::%n::subject::%n%s%n::subject::%n::author::%n%aN%n::author::%n::authorEmail::%n%aE%n::authorEmail::%n::date::%n%aD%n::date::%n::body::%n%b%n::body::%n%x00%x00'];
+export async function log(repository: Repository, count = 20): Promise<Commit[]> {
+  const args = ['log', `-n ${count}`, '--pretty=format:::commit::%n%H%n::commit::%n::subject::%n%s%n::subject::%n::author::%n%aN%n::author::%n::authorEmail::%n%aE%n::authorEmail::%n::date::%n%aD%n::date::%n::body::%n%b%n::body::%n%x00%x00'];
 
   const gitResult = await run(repository, args);
   if (gitResult.exitCode) {
@@ -53,4 +53,19 @@ export async function log(repository: Repository): Promise<Commit[]> {
   }
 
   return result;
+}
+
+export async function diff(repository: Repository, commit: Commit): Promise<string[]> {
+  const args = ['diff', '--name-only', `${commit.commit}~`, commit.commit];
+  
+  const gitResult = await run(repository, args);
+
+  if (gitResult.exitCode) {
+    // An empty repo.
+    return [];
+  }
+
+  const raw = gitResult.stdout;
+  const files = raw.split('\n').filter(Boolean);
+  return files;
 }

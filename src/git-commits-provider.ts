@@ -3,7 +3,7 @@ import { GitExtension, Repository } from './ext/git';
 import { CommitNode } from './commit-node';
 import { log } from './git';
 
-export class GitCommitsProvider implements vscode.TreeDataProvider<CommitNode> {
+export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<CommitNode | undefined> = new vscode.EventEmitter<CommitNode | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<CommitNode | undefined> = this._onDidChangeTreeData.event;
 	
@@ -29,7 +29,10 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<CommitNode> {
 			const git = gitExtension.exports.getAPI(1);
 
 			git.repositories.forEach((repository) => {
-				this.selectedRepository = repository;
+				if (repository.ui.selected) {
+					this.selectedRepository = repository;
+				}
+				
 				repository.ui.onDidChange(() => this.selectedRepository = repository);
 			})
 			
@@ -48,14 +51,18 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<CommitNode> {
 		return element;
 	}
 
-	async getChildren(element?: CommitNode): Promise<CommitNode[]> {
+	async getChildren(element?: CommitNode): Promise<vscode.TreeItem[]> {
 		const repository = this.selectedRepository;
-
+	
 		if (!repository) return [];
 		
-		const logs = await log(repository);
-		
-		return logs.map((log) => new CommitNode(log, repository));
+		if (element) {
+			return element.getChildren(); 
+		} else {
+			const logs = await log(repository);
+			
+			return logs.map((log) => new CommitNode(log, repository));
+		}
 	}
 
 	_observeRepositoryState(repository: Repository) {
