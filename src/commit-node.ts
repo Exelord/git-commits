@@ -1,42 +1,21 @@
 import * as vscode from 'vscode';
-import { Commit } from './git';
-import { DateTime } from 'luxon';
+import { Commit } from './git-manager';
 import { Repository, Remote } from './ext/git';
-import * as md5 from 'md5';
-import { diff } from './git';
-import { PathNode } from './path-node';
+import { createHash } from 'crypto';
 
 export class CommitNode extends vscode.TreeItem {
-	repository: Repository;
-	commit: Commit;
+	private avatarCache = new Map();
 
-	constructor(commit: Commit, repository: Repository) {
+	constructor(private commit: Commit, private repository: Repository) {
 		super(commit.subject, vscode.TreeItemCollapsibleState.Collapsed);
-		
-		this.commit = commit;
-		this.repository = repository;
-		this.description = DateTime.fromRFC2822(commit.date).toRelative({ locale: vscode.env.language }) || '';
+			
+		this.id = commit.hash;
+		this.description = commit.timePassed;
 
-		if (commit.authorEmail) {
-			this.tooltip = commit.authorEmail;
-			this.iconPath = vscode.Uri.parse(this.avatarUrl(commit.authorEmail))
+		if (commit.email) {
+			this.tooltip = commit.email;
+			this.iconPath = this.avatarUrl(commit.email);
 		}
-	}
-
-	async getChildren(): Promise<vscode.TreeItem[]> {
-		const files = await diff(this.repository, this.commit);
-		
-		return files.sort((a, b) => {
-			const aParts = a.split("/");
-			const bParts = b.split("/");
-
-			if (aParts.length < bParts.length) return 1;
-			if (aParts.length > bParts.length) return -1;
-		
-			return aParts.find((aPart, index) => {
-				return aPart < bParts[index]
-			}) ? -1 : 1;
-		}).map((path) => new PathNode(path, this));
 	}
 
 	private get remoteHost(): string | undefined {
@@ -48,15 +27,16 @@ export class CommitNode extends vscode.TreeItem {
 		
 		if (match && match.groups) {
 			return match.groups.host;
-		};
+		}
 	}
 
-	private avatarUrl(email: string) {
-		if (this.remoteHost === 'github') {
-			return this.githubAvatarUrl(email);
-		}
+	private avatarUrl(email: string): vscode.Uri {
+		if (this.avatarCache.has(email)) { return this.avatarCache.get(email); }
 
-		return this.gravatarUrl(email);
+		const avatarUri = vscode.Uri.parse(this.remoteHost === 'github' ? this.githubAvatarUrl(email) : this.gravatarUrl(email));
+		this.avatarCache.set(email, avatarUri);
+
+		return avatarUri;
 	}
 
 	private githubAvatarUrl(email: string) {
@@ -70,6 +50,7 @@ export class CommitNode extends vscode.TreeItem {
 	}
 
 	private gravatarUrl(email: string) {
-		return `https://www.gravatar.com/avatar/${md5(email)}?s=20`;
+		const hash = createHash("md5").update(email).digest("hex");
+		return `https://www.gravatar.com/avatar/${hash}?s=20`;
 	}
 }

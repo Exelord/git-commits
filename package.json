@@ -70,6 +70,7 @@
     "release": "release-it"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
     "@types/luxon": "^1.15.2",
     "@types/md5": "^2.1.33",
     "@types/mocha": "^5.2.7",
@@ -96,7 +97,8 @@
     }
   },
   "dependencies": {
-    "luxon": "^1.17.2",
-    "md5": "^2.2.1"
+    "crypto": "^1.0.1",
+    "fs-extra": "^8.1.0",
+    "temp-dir": "^2.0.0"
   }
 }
