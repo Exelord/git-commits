@@ -7,7 +7,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const gitCommitsProvider = new GitCommitsProvider(gitManager);
 
 	context.subscriptions.push(
-		vscode.window.createTreeView('gitCommits', { treeDataProvider: gitCommitsProvider }),
+		vscode.window.createTreeView('gitCommits', { treeDataProvider: gitCommitsProvider, showCollapseAll: true }),
 		vscode.commands.registerCommand('gitCommits.diff', gitManager.compareCommitFileAgainstPrevious)
 	);
 }
