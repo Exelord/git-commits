@@ -12,8 +12,14 @@ export class CommitNode extends vscode.TreeItem {
 		this.id = commit.hash;
 		this.description = commit.timePassed;
 
+		this.tooltip = [
+			`${commit.author} (${commit.email}) -- ${commit.hash}`,
+			commit.date,
+			'',
+			commit.subject
+		].join('\n');
+
 		if (commit.email) {
-			this.tooltip = commit.email;
 			this.iconPath = this.avatarUrl(commit.email);
 		}
 	}

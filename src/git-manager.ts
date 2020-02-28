@@ -8,6 +8,8 @@ import { ensureDirSync } from "fs-extra";
 
 export interface Commit {
   hash: string;
+  date: string;
+  body: string;
   email: string;
   author: string;
   subject: string;
@@ -50,7 +52,7 @@ export class GitManager {
 
   async fetchCommits(limit: number): Promise<Commit[]> {
     const result = await this.executeGitCommand(
-      `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X }'`
+      `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X }'`
     );
     return result.split("\n").map(line =>
       JSON.parse(
@@ -105,29 +107,30 @@ export class GitManager {
     return this._commitFileCache[key];
   }
 
+  // ? We should not use tmp storage. GITFS?
   compareCommitFileAgainstPrevious = async (hash: string, commitFile: CommitFile): Promise<void> => {
-    const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    const title = `${basename(commitFile.relPath)} (git) (read-only)`;
+    // const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
+    // const title = `${basename(commitFile.relPath)} (git) (read-only)`;
 
-    try {
-      switch (commitFile.action) {
-        case "deleted":
-          const deletedCommit = await this.getCommitFileUri(hash + "~1", commitFile);
-          vscode.commands.executeCommand("vscode.open", deletedCommit, options, title);
-          break;
-        case "added":
-          const addedCommit = await this.getCommitFileUri(hash, commitFile);
-          vscode.commands.executeCommand("vscode.open", addedCommit, options, title);
-          break;
-        default:
-          const prevCommit = await this.getCommitFileUri(hash + "~1", commitFile);
-          const currCommit = await this.getCommitFileUri(hash, commitFile);
-          vscode.commands.executeCommand("vscode.diff", prevCommit, currCommit, title, options);
-          break;
-      }
-    } catch (e) {
-      console.error(e);
-    }
+    // try {
+    //   switch (commitFile.action) {
+    //     case "deleted":
+    //       const deletedCommit = await this.getCommitFileUri(hash + "~1", commitFile);
+    //       vscode.commands.executeCommand("vscode.open", deletedCommit, options, title);
+    //       break;
+    //     case "added":
+    //       const addedCommit = await this.getCommitFileUri(hash, commitFile);
+    //       vscode.commands.executeCommand("vscode.open", addedCommit, options, title);
+    //       break;
+    //     default:
+    //       const prevCommit = await this.getCommitFileUri(hash + "~1", commitFile);
+    //       const currCommit = await this.getCommitFileUri(hash, commitFile);
+    //       vscode.commands.executeCommand("vscode.diff", prevCommit, currCommit, title, options);
+    //       break;
+    //   }
+    // } catch (e) {
+    //   console.error(e);
+    // }
   }
 
   updateWorkspaceFolder(folderPath: string): void {
