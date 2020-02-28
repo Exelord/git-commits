@@ -87,54 +87,37 @@ export class GitManager {
     return this.sortFiles(files);
   }
 
-  async getCommitFileUri(hash: string, { relPath }: CommitFile): Promise<vscode.Uri> {
-    const key = createHash("md5")
-      .update(hash + relPath)
-      .digest("hex");
-    if (!this._commitFileCache[key]) {
-      const tmpDirPath = join(tempdir, 'vscode.git-commits', key);
-      const tmpPath = join(tmpDirPath, basename(relPath));
-      
-      ensureDirSync(tmpDirPath);
-      
-      if (!existsSync(tmpPath)) {
-        const result = await this.executeGitCommand(`show ${hash}:${relPath}`);
-        writeFileSync(tmpPath, result, { mode: 0o444 });
-      }
-      
-      this._commitFileCache[key] = vscode.Uri.file(tmpPath);
-    }
-    return this._commitFileCache[key];
+  getCommitFileUri(hash: string, { relPath }: CommitFile): vscode.Uri {
+    return this.toGitUri(vscode.Uri.file(join(this._workspaceFolder, relPath)), hash);
   }
 
-  // ? We should not use tmp storage. GITFS?
   compareCommitFileAgainstPrevious = async (hash: string, commitFile: CommitFile): Promise<void> => {
-    // const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    // const title = `${basename(commitFile.relPath)} (git) (read-only)`;
+    const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
+    const baseName = basename(commitFile.relPath);
+    const title = `${baseName} (${hash}) ⟷ ${baseName} (${hash})`;
+    const prevCommit = await this.getCommitFileUri(hash + "~1", commitFile);
+    const currCommit = await this.getCommitFileUri(hash, commitFile);
 
-    // try {
-    //   switch (commitFile.action) {
-    //     case "deleted":
-    //       const deletedCommit = await this.getCommitFileUri(hash + "~1", commitFile);
-    //       vscode.commands.executeCommand("vscode.open", deletedCommit, options, title);
-    //       break;
-    //     case "added":
-    //       const addedCommit = await this.getCommitFileUri(hash, commitFile);
-    //       vscode.commands.executeCommand("vscode.open", addedCommit, options, title);
-    //       break;
-    //     default:
-    //       const prevCommit = await this.getCommitFileUri(hash + "~1", commitFile);
-    //       const currCommit = await this.getCommitFileUri(hash, commitFile);
-    //       vscode.commands.executeCommand("vscode.diff", prevCommit, currCommit, title, options);
-    //       break;
-    //   }
-    // } catch (e) {
-    //   console.error(e);
-    // }
+    vscode.commands.executeCommand("vscode.diff", prevCommit, currCommit, title, options);
   }
 
   updateWorkspaceFolder(folderPath: string): void {
     this._workspaceFolder = folderPath;
+  }
+
+  private toGitUri(uri: vscode.Uri, ref: string): vscode.Uri {
+    const params = {
+      path: uri.fsPath,
+      ref
+    };
+  
+    const path = uri.path;
+  
+    return uri.with({
+      scheme: 'git',
+      path,
+      query: JSON.stringify(params)
+    });
   }
 
   private sortFiles(files: CommitFile[]): CommitFile[] {

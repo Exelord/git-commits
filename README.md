@@ -14,9 +14,6 @@ List last commits in SCM tab like in Atom editor. No need for git log, quick ove
 
 - list commits
 - quickly undo last commit
-
-## Upcoming
-
-- Preview commit changes
+- Preview commit changes (diff files)
 
 **Enjoy!**
