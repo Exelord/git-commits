@@ -42,10 +42,17 @@
       {
         "command": "git.undoCommit",
         "title": "Undo last commit",
-        "icon": {
-          "light": "resources/icons/light/clean.svg",
-          "dark": "resources/icons/dark/clean.svg"
-        }
+        "icon": "$(discard)"
+      },
+      {
+        "command": "gitCommits.copyCommitHash",
+        "title": "Copy commit hash",
+        "icon": "$(files)"
+      },
+      {
+        "command": "gitCommits.copyFilePath",
+        "title": "Copy file path",
+        "icon": "$(files)"
       }
     ],
     "menus": {
@@ -54,6 +61,18 @@
           "command": "git.undoCommit",
           "when": "view == gitCommits",
           "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "gitCommits.copyCommitHash",
+          "when": "view == gitCommits && viewItem == commitNode",
+          "group": "inline"
+        },
+        {
+          "command": "gitCommits.copyFilePath",
+          "when": "view == gitCommits && viewItem == fileNode",
+          "group": "inline"
         }
       ]
     }
@@ -70,15 +89,12 @@
     "release": "release-it"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
-    "@types/luxon": "^1.15.2",
-    "@types/md5": "^2.1.33",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.7.2",
-    "release-it": "^12.3.5",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3",
-    "vsce": "^1.66.0",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.6",
+    "release-it": "^12.6.2",
+    "tslint": "^6.0.0",
+    "typescript": "^3.8.2",
+    "vsce": "^1.74.0",
     "vscode": "^1.1.36"
   },
   "release-it": {
