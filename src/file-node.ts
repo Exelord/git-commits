@@ -3,7 +3,7 @@ import { CommitNode } from './commit-node';
 import { CommitFile } from './git-manager';
 
 export class FileNode extends vscode.TreeItem {
-	constructor(private file: CommitFile, private commit: CommitNode) {
+	constructor(public file: CommitFile, private commitNode: CommitNode) {
 		super(file.relPath);
 
 		const statuses = {
@@ -15,15 +15,16 @@ export class FileNode extends vscode.TreeItem {
 
 		const parts = file.relPath.split('/');
 
-		this.id = commit.id + file.relPath;
+		this.id = commitNode.id + file.relPath;
 		this.label = [statuses[file.action], parts.pop()].filter(Boolean).join(' ');
 		this.description = parts.join('/');
 		this.resourceUri = vscode.Uri.file(file.relPath);
 		this.tooltip = `${file.relPath}\n\n${file.action}`;
+		this.contextValue = 'fileNode';
 		this.command = {
 			title: "diff",
 			command: "gitCommits.diff",
-			arguments: [commit.id, file]
+			arguments: [commitNode.commit, file]
 		};
 	}
 }

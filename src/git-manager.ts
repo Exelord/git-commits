@@ -4,6 +4,7 @@ import { join, basename } from 'path';
 
 export interface Commit {
   hash: string;
+  shortHash: string;
   date: string;
   body: string;
   email: string;
@@ -48,7 +49,7 @@ export class GitManager {
 
   async fetchCommits(limit: number): Promise<Commit[]> {
     const result = await this.executeGitCommand(
-      `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X }'`
+      `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%H#@X, #@XshortHash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X }'`
     );
     return result.split("\n").map(line =>
       JSON.parse(
@@ -87,12 +88,12 @@ export class GitManager {
     return this.toGitUri(vscode.Uri.file(join(this._workspaceFolder, relPath)), hash);
   }
 
-  compareCommitFileAgainstPrevious = async (hash: string, commitFile: CommitFile): Promise<void> => {
+  async compareCommitFileAgainstPrevious(commit: Commit, file: CommitFile): Promise<void> {
     const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    const baseName = basename(commitFile.relPath);
-    const title = `${baseName} (${hash}) ⟷ ${baseName} (${hash})`;
-    const prevCommit = await this.getCommitFileUri(hash + "~1", commitFile);
-    const currCommit = await this.getCommitFileUri(hash, commitFile);
+    const baseName = basename(file.relPath);
+    const title = `${baseName} (${commit.shortHash}) ⟷ ${baseName} (${commit.shortHash})`;
+    const prevCommit = await this.getCommitFileUri(commit.hash + "~1", file);
+    const currCommit = await this.getCommitFileUri(commit.hash, file);
 
     vscode.commands.executeCommand("vscode.diff", prevCommit, currCommit, title, options);
   }

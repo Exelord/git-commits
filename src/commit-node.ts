@@ -6,14 +6,15 @@ import { createHash } from 'crypto';
 export class CommitNode extends vscode.TreeItem {
 	private avatarCache = new Map();
 
-	constructor(private commit: Commit, private repository: Repository) {
+	constructor(public commit: Commit, private repository: Repository) {
 		super(commit.subject, vscode.TreeItemCollapsibleState.Collapsed);
 			
 		this.id = commit.hash;
 		this.description = commit.timePassed;
+		this.contextValue = 'commitNode';
 
 		this.tooltip = [
-			`${commit.author} (${commit.email}) -- ${commit.hash}`,
+			`${commit.author} (${commit.email}) -- ${commit.shortHash}`,
 			commit.date,
 			'',
 			commit.subject
