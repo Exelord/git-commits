@@ -3,7 +3,7 @@ import { CommitNode } from './commit-node';
 import { CommitFile } from './git-manager';
 
 export class FileNode extends vscode.TreeItem {
-	constructor(public file: CommitFile, private commitNode: CommitNode) {
+	constructor(public file: CommitFile, public commitNode: CommitNode) {
 		super(file.relPath);
 
 		const statuses = {

@@ -53,6 +53,16 @@
         "command": "gitCommits.copyFilePath",
         "title": "Copy file path",
         "icon": "$(files)"
+      },
+      {
+        "command": "gitCommits.revertFile",
+        "title": "Revert file",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "gitCommits.openFile",
+        "title": "Open file",
+        "icon": "$(go-to-file)"
       }
     ],
     "menus": {
@@ -70,9 +80,19 @@
           "group": "inline"
         },
         {
+          "command": "gitCommits.openFile",
+          "when": "view == gitCommits && viewItem == fileNode",
+          "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.revertFile",
+          "when": "view == gitCommits && viewItem == fileNode",
+          "group": "inline@2"
+        },
+        {
           "command": "gitCommits.copyFilePath",
           "when": "view == gitCommits && viewItem == fileNode",
-          "group": "inline"
+          "group": "inline@3"
         }
       ]
     }

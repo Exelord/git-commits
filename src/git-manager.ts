@@ -34,8 +34,12 @@ export class GitManager {
   constructor(private _workspaceFolder: string) {}
 
   async executeGitCommand(command: string): Promise<string> {
+    return this.executeCommand(`git -C ${this._workspaceFolder} ${command}`);
+  }
+
+  async executeCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      exec(`git -C ${this._workspaceFolder} ${command}`, (error, stdout, stderr) => {
+      exec(command, { cwd: this._workspaceFolder }, (error, stdout, stderr) => {
         if (error) {
           reject(error);
         }
@@ -98,11 +102,22 @@ export class GitManager {
     vscode.commands.executeCommand("vscode.diff", prevCommit, currCommit, title, options);
   }
 
+  async revertFile(file: CommitFile, commit: Commit): Promise<void> {
+    const states = {
+      deleted: () => this.executeGitCommand(`checkout ${commit.hash}~1 -- ${file.relPath}`),
+      added: () => this.executeCommand(`rm ${file.relPath} && git add ${file.relPath}`),
+      modified: () => this.executeGitCommand(`checkout ${commit.hash}~1 -- ${file.relPath}`),
+      renamed: () => this.executeGitCommand(`checkout ${commit.hash}~1 -- ${file.relPath}`)
+    };
+
+    await states[file.action]();
+  }
+
   updateWorkspaceFolder(folderPath: string): void {
     this._workspaceFolder = folderPath;
   }
 
-  private toGitUri(uri: vscode.Uri, ref: string): vscode.Uri {
+  toGitUri(uri: vscode.Uri, ref: string): vscode.Uri {
     const params = {
       path: uri.fsPath,
       ref
