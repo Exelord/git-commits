@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import * as vscode from "vscode";
+import { join, basename } from 'path';
 
 export interface Commit {
   hash: string;
