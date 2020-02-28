@@ -7,10 +7,10 @@ export class FileNode extends vscode.TreeItem {
 		super(file.relPath);
 
 		const statuses = {
-			"added": "✅",
-			"modified": "⚠️",
-			"deleted": "❌",
-			"renamed": "📝"
+			"added": "💚",
+			"modified": "💛",
+			"deleted": "💔",
+			"renamed": "💙"
 		};
 
 		const parts = file.relPath.split('/');
