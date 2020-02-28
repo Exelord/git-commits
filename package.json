@@ -97,8 +97,6 @@
     }
   },
   "dependencies": {
-    "crypto": "^1.0.1",
-    "fs-extra": "^8.1.0",
-    "temp-dir": "^2.0.0"
+    "crypto": "^1.0.1"
   }
 }

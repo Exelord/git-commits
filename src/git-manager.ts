@@ -1,10 +1,5 @@
 import { exec } from "child_process";
-import { createHash } from "crypto";
-import { existsSync, writeFileSync } from "fs";
-import { join, basename } from "path";
-import * as tempdir from "temp-dir";
 import * as vscode from "vscode";
-import { ensureDirSync } from "fs-extra";
 
 export interface Commit {
   hash: string;
