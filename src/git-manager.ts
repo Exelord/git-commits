@@ -36,7 +36,7 @@ export class GitManager {
   constructor(public workspaceFolder: string) {}
 
   async executeGitCommand(command: string): Promise<string> {
-    return this.executeCommand(`git -C ${this.workspaceFolder} ${command}`);
+    return this.executeCommand(`git -C "${this.workspaceFolder}" ${command}`);
   }
 
   async fetchCommits(limit: number): Promise<Commit[]> {
