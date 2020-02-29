@@ -14,15 +14,15 @@ export function activate(context: vscode.ExtensionContext) {
       showCollapseAll: true 
     }),
 		
-		vscode.commands.registerCommand('gitCommits.diff', async (commit: Commit, file: CommitFile) => {
-			return gitManager.compareCommitFileAgainstPrevious(commit, file);
+		vscode.commands.registerCommand('gitCommits.diff', async (file: CommitFile) => {
+			return gitManager.compareCommitFileAgainstPrevious(file);
 		}),
 
 		vscode.commands.registerCommand('gitCommits.revertFile', async (item: FileNode) => {
 			const result = await vscode.window.showInformationMessage("Are you sure you want to revert these file's changes?", { modal: true }, {title: 'Revert changes'});
 
 			if (result) {
-				return gitManager.revertFile(item.file, item.commitNode.commit);
+				return gitManager.revertFile(item.file, item.file.commit);
 			}
 		}),
 		
@@ -36,14 +36,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		vscode.commands.registerCommand('gitCommits.openFile', async (item: FileNode) => {
 			const states = {
-				deleted: `${item.commitNode.commit.hash}~1`,
-				added: `${item.commitNode.commit.hash}`,
-				modified: `${item.commitNode.commit.hash}`,
-				renamed: `${item.commitNode.commit.hash}`,
+				deleted: item.file.commit.parentHash,
+				added: item.file.commit.hash,
+				modified: item.file.commit.hash,
+				renamed: item.file.commit.hash,
 			};
 
 			const hash = states[item.file.action];
-			await vscode.commands.executeCommand('vscode.open', gitManager.getCommitFileUri(hash, item.file));
+			await vscode.commands.executeCommand('vscode.open', gitManager.getCommitFileUri(hash, item.file.relPath));
 		})
 	);
 }

@@ -17,7 +17,7 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 
 	set selectedRepository(repository: Repository | undefined) {
 		if (repository && repository.ui.selected) {
-			this.gitManager.updateWorkspaceFolder(repository.rootUri.fsPath);
+			this.gitManager.workspaceFolder = repository.rootUri.fsPath;
 			this._selectedRepository = repository;
 			this._observeRepositoryState(repository);
 			this.refresh();
@@ -51,14 +51,14 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 		return element;
 	}
 
-	async getChildren(commit?: CommitNode): Promise<vscode.TreeItem[]> {
+	async getChildren(commitNode?: CommitNode): Promise<vscode.TreeItem[]> {
 		const repository = this.selectedRepository;
 	
 		if (!repository) { return []; }
 		
-		if (commit) {
-			const files = await this.gitManager.fetchCommitFiles(commit.id || '');
-			return files.map((file) => new FileNode(file, commit));
+		if (commitNode) {
+			const files = await this.gitManager.fetchCommitFiles(commitNode.commit);
+			return files.map((file) => new FileNode(file));
 		} else {
 			const commits = await this.gitManager.fetchCommits(15);
 			
