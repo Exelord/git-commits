@@ -60,7 +60,7 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 			const files = await this.gitManager.fetchCommitFiles(commitNode.commit);
 			return files.map((file) => new FileNode(file));
 		} else {
-			const commits = await this.gitManager.fetchCommits(15);
+			const commits = await this.gitManager.fetchCommits(20);
 			
 			return commits.map((commit) => new CommitNode(commit, repository));
 		}
