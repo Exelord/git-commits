@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand('gitCommits.revertFile', async (item: FileNode) => {
-			const result = await vscode.window.showInformationMessage('Are you sure you want to revert this file?', { modal: true }, {title: 'Revert file'});
+			const result = await vscode.window.showInformationMessage("Are you sure you want to revert these file's changes?", { modal: true }, {title: 'Revert changes'});
 
 			if (result) {
 				return gitManager.revertFile(item.file, item.commitNode.commit);

@@ -56,7 +56,7 @@
       },
       {
         "command": "gitCommits.revertFile",
-        "title": "Revert file",
+        "title": "Revert changes",
         "icon": "$(discard)"
       },
       {
