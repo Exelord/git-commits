@@ -12,8 +12,10 @@ List last commits in SCM tab like in Atom editor. No need for git log, quick ove
 
 ## Features
 
-- list commits
+- list last commits
 - quickly undo last commit
 - Preview commit changes (diff files)
+- Revert file changes
+- Easily copy commit hash and file path
 
 **Enjoy!**
