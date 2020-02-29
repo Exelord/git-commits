@@ -78,12 +78,14 @@ export class GitManager {
       .split("\n")
       .map(line => {
         const c = line.split("\t");
+        if (!c.length) { return; }
+
         return {
           relPath: c[1],
           action: commitFileActionMap[c[0]],
           uri: vscode.Uri.file(join(this._workspaceFolder, c[1]))
         };
-      });
+      }).filter(Boolean) as [CommitFile];
     
     return this.sortFiles(files);
   }
