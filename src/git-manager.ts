@@ -43,7 +43,7 @@ export class GitManager {
     const result = await this.executeGitCommand(
       `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%H#@X, #@XshortHash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X, #@XparentHash#@X: #@X%P#@X, #@XparentShortHash#@X: #@X%p#@X }'`
     );
-    return result.split("\n").map(line =>
+    const commits = result.split("\n").map(line =>
       JSON.parse(
         line
           .replace(/[\\]/g, "\\\\")
@@ -56,7 +56,14 @@ export class GitManager {
           .replace(/[\t]/g, "\\t")
           .replace(/#@X/g, '"')
       )
-    );
+    ) as Commit[];
+    
+    return commits.map((commit) => {
+      commit.parentHash = commit.parentHash.split(' ').shift() || '';
+      commit.parentShortHash = commit.parentShortHash.split(' ').shift() || '';
+
+      return commit;
+    });
   }
 
   async fetchCommitFiles(commit: Commit): Promise<CommitFile[]> {
