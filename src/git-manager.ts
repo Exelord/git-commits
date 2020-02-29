@@ -72,22 +72,15 @@ export class GitManager {
   }
 
   async fetchCommitFiles(commitHash: string): Promise<CommitFile[]> {
-    const result = await this.executeGitCommand(`diff-tree --no-commit-id --name-status -r ${commitHash}`);
-    const files = result
-      .slice(0, result.length - 1)
-      .split("\n")
-      .map(line => {
-        const c = line.split("\t");
-        if (!c.length) { return; }
-
-        return {
-          relPath: c[1],
-          action: commitFileActionMap[c[0]],
-          uri: vscode.Uri.file(join(this._workspaceFolder, c[1]))
-        };
-      }).filter(Boolean) as [CommitFile];
+    const results = await this.executeGitCommand(`diff --name-status ${commitHash}~ ${commitHash}`);
+    const changedFiles = results.trim().split('\n').filter(Boolean).map((result) => result.split('\t'));
+    const commitFiles = changedFiles.map(([actionId, relPath]) => ({
+      relPath: relPath,
+      action: commitFileActionMap[actionId],
+      uri: vscode.Uri.file(join(this._workspaceFolder, relPath))
+    }));
     
-    return this.sortFiles(files);
+    return this.sortFiles(commitFiles);
   }
 
   getCommitFileUri(hash: string, { relPath }: CommitFile): vscode.Uri {
