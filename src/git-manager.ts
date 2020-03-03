@@ -32,6 +32,14 @@ const commitFileActionMap: { [symbol: string]: CommitFileStatus } = {
   R: "renamed"
 };
 
+class CommandError extends Error {
+  constructor(message: string) {
+    super(message);
+
+    this.name = 'CommandError';
+  }
+}
+
 export class GitManager {
   constructor(public workspaceFolder: string) {}
 
@@ -42,8 +50,12 @@ export class GitManager {
   async fetchCommits(limit: number): Promise<Commit[]> {
     const result = await this.executeGitCommand(
       `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%H#@X, #@XshortHash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X, #@XparentHash#@X: #@X%P#@X, #@XparentShortHash#@X: #@X%p#@X }'`
-    );
-    const commits = result.split("\n").map(line =>
+    ).catch((error: Error) => {
+      if (error.message.endsWith('does not have any commits yet')) { return '' }
+      throw error;
+    });
+
+    const commits = result.split("\n").filter(Boolean).map(line =>
       JSON.parse(
         line
           .replace(/[\\]/g, "\\\\")
@@ -123,8 +135,15 @@ export class GitManager {
   private async executeCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(command, { cwd: this.workspaceFolder }, (error, stdout, stderr) => {
-        if (error) { reject(error); }
-        if (stderr) { reject(stderr); }
+        if (error) {
+          if (error.message.startsWith('Command failed:')) {
+            return reject(new CommandError(stderr));
+          }
+
+          return reject(error);
+        }
+
+        if (stderr) { return reject(new CommandError(stderr)); }
         resolve(stdout);
       });
     });

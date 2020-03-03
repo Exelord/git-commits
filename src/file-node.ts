@@ -1,17 +1,16 @@
 import * as vscode from 'vscode';
-import { CommitNode } from './commit-node';
 import { CommitFile } from './git-manager';
+
+const statuses = {
+	"added": "💚",
+	"modified": "💛",
+	"deleted": "💔",
+	"renamed": "💙"
+};
 
 export class FileNode extends vscode.TreeItem {
 	constructor(public file: CommitFile) {
 		super(file.relPath);
-
-		const statuses = {
-			"added": "💚",
-			"modified": "💛",
-			"deleted": "💔",
-			"renamed": "💙"
-		};
 
 		const parts = file.relPath.split('/');
 
