@@ -1,4 +1,4 @@
-import { Repository as GitRepository, Commit as GitCommit } from './ext/git.d';
+import { Repository as GitRepository, Commit as GitCommit, API } from './ext/git.d';
 import { exec } from "child_process";
 import * as vscode from "vscode";
 import * as nodePath from 'path';
@@ -35,7 +35,7 @@ class CommandError extends Error {
 }
 
 export class GitManager {
-  constructor(readonly repository: GitRepository) {}
+  constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
   get workspaceFolder() {
     return this.repository.rootUri.fsPath;
@@ -101,17 +101,7 @@ export class GitManager {
   }
 
   getCommitFileUri(hash: string, relPath: string): vscode.Uri {
-    return this.toGitUri(vscode.Uri.file(nodePath.join(this.workspaceFolder, relPath)), hash);
-  }
-
-  private toGitUri(uri: vscode.Uri, ref: string): vscode.Uri {
-    const { path, fsPath } = uri;
-
-    return uri.with({
-      path,
-      scheme: 'git',
-      query: JSON.stringify({ ref, path: fsPath })
-    });
+    return this.gitApi.toGitUri(vscode.Uri.file(nodePath.join(this.workspaceFolder, relPath)), hash);
   }
 
   private async executeCommand(command: string): Promise<string> {

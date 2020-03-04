@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { GitExtension, Repository } from './ext/git';
+import { Repository, API } from './ext/git';
 import { CommitNode } from './commit-node';
 import { GitManager } from './git-manager';
 import { FileNode } from './file-node';
@@ -12,28 +12,22 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	private currentState?: string;
 	private manager?: GitManager;
 
-	constructor() {
-		const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
-
-		if (gitExtension && gitExtension.isActive) {
-			const git = gitExtension.exports.getAPI(1);
-
-			git.repositories.forEach((repository) => {
-				if (repository.ui.selected) { this.setupManager(repository); }
-				
-				repository.ui.onDidChange(() => this.setupManager(repository));
-			});
+	constructor(public gitApi: API) {
+		gitApi.repositories.forEach((repository) => {
+			if (repository.ui.selected) { this.setupManager(repository); }
 			
-			git.onDidOpenRepository((repository) => {
-				this.setupManager(repository);
-				repository.ui.onDidChange(() => this.setupManager(repository));
-			});
-		}
+			repository.ui.onDidChange(() => this.setupManager(repository));
+		});
+		
+		gitApi.onDidOpenRepository((repository) => {
+			this.setupManager(repository);
+			repository.ui.onDidChange(() => this.setupManager(repository));
+		});
 	}
 
 	setupManager(repository: Repository | undefined) {
 		if (repository && repository.ui.selected) {
-			this.manager = new GitManager(repository);
+			this.manager = new GitManager(this.gitApi, repository);
 			this.currentState = this.getHeadCommit(repository);
 			this.observeRepositoryState(repository);
 			this.refresh();

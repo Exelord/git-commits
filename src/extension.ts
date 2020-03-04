@@ -2,9 +2,15 @@ import { FileNode } from './file-node';
 import { CommitNode } from './commit-node';
 import * as vscode from 'vscode';
 import { GitCommitsProvider } from './git-commits-provider';
+import { GitExtension } from './ext/git';
 
 export function activate(context: vscode.ExtensionContext) {
-	const gitCommitsProvider = new GitCommitsProvider();
+	const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
+
+	if (!gitExtension || !gitExtension.isActive) { return; }
+
+	const gitApi = gitExtension.exports.getAPI(1);
+	const gitCommitsProvider = new GitCommitsProvider(gitApi);
 
 	context.subscriptions.push(
 		vscode.window.createTreeView('gitCommits', { 
