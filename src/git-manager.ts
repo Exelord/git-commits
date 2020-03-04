@@ -1,3 +1,4 @@
+import { Repository } from './ext/git.d';
 import { exec } from "child_process";
 import * as vscode from "vscode";
 import * as nodePath from 'path';
@@ -41,7 +42,11 @@ class CommandError extends Error {
 }
 
 export class GitManager {
-  constructor(public workspaceFolder: string) {}
+  constructor(readonly repository: Repository) {}
+
+  get workspaceFolder() {
+    return this.repository.rootUri.fsPath;
+  }
 
   async executeGitCommand(command: string): Promise<string> {
     return this.executeCommand(`git -C "${this.workspaceFolder}" ${command}`);
@@ -51,7 +56,7 @@ export class GitManager {
     const result = await this.executeGitCommand(
       `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%H#@X, #@XshortHash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X, #@XparentHash#@X: #@X%P#@X, #@XparentShortHash#@X: #@X%p#@X }'`
     ).catch((error: Error) => {
-      if (error.message.endsWith('does not have any commits yet')) { return '' }
+      if (error.message.endsWith('does not have any commits yet')) { return ''; }
       throw error;
     });
 

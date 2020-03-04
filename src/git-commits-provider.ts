@@ -9,37 +9,32 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	readonly onDidChangeTreeData: vscode.Event<CommitNode | undefined> = this._onDidChangeTreeData.event;
 	
 	private _stateObserver?: vscode.Disposable;
-	private _selectedRepository?: Repository;
-	
-	get selectedRepository(): Repository | undefined {
-		return this._selectedRepository;
-	}
+	private manager?: GitManager;
 
-	set selectedRepository(repository: Repository | undefined) {
-		if (repository && repository.ui.selected) {
-			this.gitManager.workspaceFolder = repository.rootUri.fsPath;
-			this._selectedRepository = repository;
-			this._observeRepositoryState(repository);
-			this.refresh();
-		}
-	}
-
-	constructor(private gitManager: GitManager) {
+	constructor() {
 		const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
 
 		if (gitExtension && gitExtension.isActive) {
 			const git = gitExtension.exports.getAPI(1);
 
 			git.repositories.forEach((repository) => {
-				if (repository.ui.selected) { this.selectedRepository = repository; }
+				if (repository.ui.selected) { this.setupManager(repository); }
 				
-				repository.ui.onDidChange(() => this.selectedRepository = repository);
+				repository.ui.onDidChange(() => this.setupManager(repository));
 			});
 			
 			git.onDidOpenRepository((repository) => {
-				this.selectedRepository = repository;
-				repository.ui.onDidChange(() => this.selectedRepository = repository);
+				this.setupManager(repository);
+				repository.ui.onDidChange(() => this.setupManager(repository));
 			});
+		}
+	}
+
+	setupManager(repository: Repository | undefined) {
+		if (repository && repository.ui.selected) {
+			this.manager = new GitManager(repository);
+			this._observeRepositoryState(repository);
+			this.refresh();
 		}
 	}
 
@@ -52,17 +47,13 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	}
 
 	async getChildren(commitNode?: CommitNode): Promise<vscode.TreeItem[]> {
-		const repository = this.selectedRepository;
-	
-		if (!repository) { return []; }
-		
 		if (commitNode) {
-			const files = await this.gitManager.fetchCommitFiles(commitNode.commit);
-			return files.map((file) => new FileNode(file));
+			const files = await commitNode.manager.fetchCommitFiles(commitNode.commit);
+			return files.map((file) => new FileNode(file, commitNode.manager));
 		} else {
-			const commits = await this.gitManager.fetchCommits(20);
-			
-			return commits.map((commit) => new CommitNode(commit, repository));
+			if (!this.manager) { return []; }
+			const commits = await this.manager.fetchCommits(20);
+			return commits.map((commit) => new CommitNode(commit, this.manager as GitManager));
 		}
 	}
 

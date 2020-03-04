@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { CommitFile } from './git-manager';
+import { CommitFile, GitManager } from './git-manager';
 
 const statuses = {
 	"added": "💚",
@@ -9,7 +9,7 @@ const statuses = {
 };
 
 export class FileNode extends vscode.TreeItem {
-	constructor(public file: CommitFile) {
+	constructor(public file: CommitFile, public manager: GitManager) {
 		super(file.relPath);
 
 		const parts = file.relPath.split('/');
@@ -22,8 +22,8 @@ export class FileNode extends vscode.TreeItem {
 		this.contextValue = 'fileNode';
 		this.command = {
 			title: "diff",
-			command: "gitCommits.diff",
-			arguments: [file]
+			command: "gitCommits.diffFile",
+			arguments: [this]
 		};
 	}
 }

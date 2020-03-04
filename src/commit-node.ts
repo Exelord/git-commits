@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import { Commit } from './git-manager';
-import { Repository, Remote } from './ext/git';
+import { Commit, GitManager } from './git-manager';
+import { Remote } from './ext/git';
 import { createHash } from 'crypto';
 
 export class CommitNode extends vscode.TreeItem {
 	private avatarCache = new Map();
 
-	constructor(public commit: Commit, private repository: Repository) {
+	constructor(public commit: Commit, public manager: GitManager) {
 		super(commit.subject, vscode.TreeItemCollapsibleState.Collapsed);
 			
 		this.id = commit.hash;
@@ -26,7 +26,7 @@ export class CommitNode extends vscode.TreeItem {
 	}
 
 	private get remoteHost(): string | undefined {
-		const remotes = this.repository._repository.remotes;
+		const remotes = this.manager.repository._repository.remotes;
 		const remote = remotes.find((remote: Remote) => remote.name === 'origin') || remotes[0];
 		const remoteUrl = remote ? remote.fetchUrl : '';
 		const regexp = new RegExp(/@(?<host>\S+)\.\w+[:|\/]/);
