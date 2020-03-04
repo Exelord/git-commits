@@ -1,19 +1,12 @@
-import { Repository } from './ext/git.d';
+import { Repository as GitRepository, Commit as GitCommit } from './ext/git.d';
 import { exec } from "child_process";
 import * as vscode from "vscode";
 import * as nodePath from 'path';
 
-export interface Commit {
-  hash: string;
+export interface Commit extends GitCommit {
   shortHash: string;
   parentHash: string;
   parentShortHash: string;
-  date: string;
-  body: string;
-  email: string;
-  author: string;
-  subject: string;
-  timePassed: string;
 }
 
 type CommitFileStatus = "added" | "modified" | "deleted" | "renamed";
@@ -42,7 +35,7 @@ class CommandError extends Error {
 }
 
 export class GitManager {
-  constructor(readonly repository: Repository) {}
+  constructor(readonly repository: GitRepository) {}
 
   get workspaceFolder() {
     return this.repository.rootUri.fsPath;
@@ -52,32 +45,16 @@ export class GitManager {
     return this.executeCommand(`git -C "${this.workspaceFolder}" ${command}`);
   }
 
-  async fetchCommits(limit: number): Promise<Commit[]> {
-    const result = await this.executeGitCommand(
-      `log -${limit} --pretty=format:'{ #@Xhash#@X: #@X%H#@X, #@XshortHash#@X: #@X%h#@X, #@Xauthor#@X: #@X%an#@X, #@Xemail#@X: #@X%ae#@X, #@XtimePassed#@X: #@X%cr#@X, #@Xsubject#@X: #@X%s#@X, #@Xdate#@X: #@X%cI#@X, #@XparentHash#@X: #@X%P#@X, #@XparentShortHash#@X: #@X%p#@X }'`
-    ).catch((error: Error) => {
-      if (error.message.endsWith('does not have any commits yet')) { return ''; }
+  async fetchCommits(maxEntries: number): Promise<Commit[]> {
+    const commits = await this.repository.log({ maxEntries }).catch((error: Error) => {
+      if (error.message.endsWith('does not have any commits yet')) { return []; }
       throw error;
-    });
+    }) as Commit[];
 
-    const commits = result.split("\n").filter(Boolean).map(line =>
-      JSON.parse(
-        line
-          .replace(/[\\]/g, "\\\\")
-          .replace(/[\"]/g, '\\"')
-          .replace(/[\/]/g, "\\/")
-          .replace(/[\b]/g, "\\b")
-          .replace(/[\f]/g, "\\f")
-          .replace(/[\n]/g, "\\n")
-          .replace(/[\r]/g, "\\r")
-          .replace(/[\t]/g, "\\t")
-          .replace(/#@X/g, '"')
-      )
-    ) as Commit[];
-    
     return commits.map((commit) => {
-      commit.parentHash = commit.parentHash.split(' ').shift() || '';
-      commit.parentShortHash = commit.parentShortHash.split(' ').shift() || '';
+      commit.parentHash = commit.parents.shift() || commit.hash;
+      commit.shortHash = commit.hash.substr(0, 7);
+      commit.parentShortHash = commit.parentHash.substr(0, 7);
 
       return commit;
     });

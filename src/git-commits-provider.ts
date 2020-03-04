@@ -9,6 +9,7 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	readonly onDidChangeTreeData: vscode.Event<CommitNode | undefined> = this._onDidChangeTreeData.event;
 	
 	private _stateObserver?: vscode.Disposable;
+	private currentState?: string;
 	private manager?: GitManager;
 
 	constructor() {
@@ -33,7 +34,8 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	setupManager(repository: Repository | undefined) {
 		if (repository && repository.ui.selected) {
 			this.manager = new GitManager(repository);
-			this._observeRepositoryState(repository);
+			this.currentState = this.getHeadCommit(repository);
+			this.observeRepositoryState(repository);
 			this.refresh();
 		}
 	}
@@ -57,11 +59,20 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 		}
 	}
 
-	_observeRepositoryState(repository: Repository) {
+	private observeRepositoryState(repository: Repository) {
 		if (this._stateObserver) { this._stateObserver.dispose(); }
 		
 		this._stateObserver = repository.state.onDidChange(() => {
-			this.refresh();
+			const headCommit = this.getHeadCommit(repository);
+
+			if (this.currentState !== headCommit) {
+				this.currentState = headCommit;
+				this.refresh();
+			}
 		});
+	}
+
+	private getHeadCommit(repository: Repository) {
+		return repository.state.HEAD && repository.state.HEAD.commit;
 	}
 }

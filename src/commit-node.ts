@@ -2,33 +2,39 @@ import * as vscode from 'vscode';
 import { Commit, GitManager } from './git-manager';
 import { Remote } from './ext/git';
 import { createHash } from 'crypto';
+import { selectUnit } from '@formatjs/intl-utils';
 
 export class CommitNode extends vscode.TreeItem {
 	private avatarCache = new Map();
 
 	constructor(public commit: Commit, public manager: GitManager) {
-		super(commit.subject, vscode.TreeItemCollapsibleState.Collapsed);
+		super(commit.message, vscode.TreeItemCollapsibleState.Collapsed);
 			
 		this.id = commit.hash;
-		this.description = commit.timePassed;
+		this.description = this.relativeTime;
 		this.contextValue = 'commitNode';
 
 		this.tooltip = [
-			`${commit.author} (${commit.email}) -- ${commit.shortHash}`,
-			commit.date,
+			`${commit.authorName} (${commit.authorEmail}) -- ${commit.shortHash}`,
+			commit.authorDate,
 			'',
-			commit.subject
+			commit.message
 		].join('\n');
 
-		if (commit.email) {
-			this.iconPath = this.avatarUrl(commit.email);
+		if (commit.authorEmail) {
+			this.iconPath = this.avatarUrl(commit.authorEmail);
 		}
 	}
 
+	get relativeTime() {
+		const { value, unit } = selectUnit((this.commit.authorDate || new Date()).getTime());
+		return new (Intl as any).RelativeTimeFormat(vscode.env.language, { style: 'long' }).format(value, unit);
+	}
+
 	private get remoteHost(): string | undefined {
-		const remotes = this.manager.repository._repository.remotes;
+		const remotes = this.manager.repository.state.remotes;
 		const remote = remotes.find((remote: Remote) => remote.name === 'origin') || remotes[0];
-		const remoteUrl = remote ? remote.fetchUrl : '';
+		const remoteUrl = remote ? remote.fetchUrl || '' : '';
 		const regexp = new RegExp(/@(?<host>\S+)\.\w+[:|\/]/);
 		const match = regexp.exec(remoteUrl);
 		
