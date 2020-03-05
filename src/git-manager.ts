@@ -1,5 +1,4 @@
-import { Repository as GitRepository, Commit as GitCommit, API } from './ext/git.d';
-import { exec } from "child_process";
+import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange } from './ext/git.d';
 import * as vscode from "vscode";
 import * as nodePath from 'path';
 
@@ -7,24 +6,15 @@ export interface Commit extends GitCommit {
   shortHash: string;
   parentHash: string;
   parentShortHash: string;
+  repository: GitRepository;
 }
 
-type CommitFileStatus = "added" | "modified" | "deleted" | "renamed";
-
-export interface CommitFile {
-  relPath: string;
-  relatedRelPath: string;
+export interface Change extends GitChange {
   commit: Commit;
-  action: CommitFileStatus;
   uri: vscode.Uri;
+  renameUri: vscode.Uri;
+  originalUri: vscode.Uri;
 }
-
-const commitFileActionMap: { [symbol: string]: CommitFileStatus } = {
-  A: "added",
-  M: "modified",
-  D: "deleted",
-  R: "renamed"
-};
 
 class CommandError extends Error {
   constructor(message: string) {
@@ -37,14 +27,6 @@ class CommandError extends Error {
 export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
-  get workspaceFolder() {
-    return this.repository.rootUri.fsPath;
-  }
-
-  async executeGitCommand(command: string): Promise<string> {
-    return this.executeCommand(`git -C "${this.workspaceFolder}" ${command}`);
-  }
-
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
     const commits = await this.repository.log({ maxEntries }).catch((error: Error) => {
       if (error.message.endsWith('does not have any commits yet')) { return []; }
@@ -55,76 +37,42 @@ export class GitManager {
       commit.parentHash = commit.parents.shift() || commit.hash;
       commit.shortHash = commit.hash.substr(0, 7);
       commit.parentShortHash = commit.parentHash.substr(0, 7);
+      commit.repository = this.repository;
 
       return commit;
     });
   }
 
-  async fetchCommitFiles(commit: Commit): Promise<CommitFile[]> {
-    const results = await this.executeGitCommand(`diff --name-status ${commit.hash}~ ${commit.hash}`);
-    const changedFiles = results.trim().split('\n').filter(Boolean).map((result) => result.split('\t'));
+  async commitChanges(commit: Commit): Promise<Change[]> {
+    const gitChanges = await this.repository.diffBetween(commit.parentHash, commit.hash);
     
-    const commitFiles = changedFiles.map(([actionId, relatedRelPath, relPath]) => {
-      relPath = relPath || relatedRelPath;
+    const changes = gitChanges.map((gitChange) => {
+      const change = gitChange as Change;
+      
+      change.commit = commit;
+      change.uri = this.gitApi.toGitUri(vscode.Uri.file(change.uri.fsPath), commit.hash);
+      change.originalUri = this.gitApi.toGitUri(vscode.Uri.file(change.originalUri.fsPath), commit.parentHash);
+      change.renameUri = this.gitApi.toGitUri(vscode.Uri.file(change.renameUri.fsPath), commit.parentHash);
 
-      return {
-        relPath,
-        commit,
-        relatedRelPath: relatedRelPath,
-        action: commitFileActionMap[actionId] || commitFileActionMap['R'],
-        uri: this.getCommitFileUri(commit.hash, relPath)
-      } as CommitFile;
+      return change;
     });
     
-    return this.sortFiles(commitFiles);
+    return this.sortChanges(changes);
   }
 
-  async compareCommitFileAgainstPrevious(file: CommitFile): Promise<void> {
+  async diffChange(change: Change): Promise<void> {
     const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    const leftSideBaseName = nodePath.basename(file.relatedRelPath);
-    const rightSideBaseName = nodePath.basename(file.relPath);
-    const title = `${leftSideBaseName} (${file.commit.parentShortHash}) ⟷ ${rightSideBaseName} (${file.commit.shortHash})`;
-    const prevCommitUri = await this.getCommitFileUri(file.commit.parentHash, file.relatedRelPath);
+    const leftSideBaseName = nodePath.basename(change.originalUri.fsPath);
+    const rightSideBaseName = nodePath.basename(change.uri.fsPath);
+    const title = `${leftSideBaseName} (${change.commit.parentShortHash}) ⟷ ${rightSideBaseName} (${change.commit.shortHash})`;
 
-    vscode.commands.executeCommand("vscode.diff", prevCommitUri, file.uri, title, options);
+    await vscode.commands.executeCommand("vscode.diff", change.originalUri, change.uri, title, options);
   }
 
-  async revertFile(file: CommitFile, commit: Commit): Promise<void> {
-    const states = {
-      deleted: () => this.executeGitCommand(`checkout ${commit.parentHash} -- ${file.relPath}`),
-      added: () => this.executeCommand(`rm ${file.relPath} && git add ${file.relPath}`),
-      modified: () => this.executeGitCommand(`checkout ${commit.parentHash} -- ${file.relPath}`),
-      renamed: () => this.executeGitCommand(`checkout ${commit.parentHash} -- ${file.relPath}`)
-    };
-
-    await states[file.action]();
-  }
-
-  getCommitFileUri(hash: string, relPath: string): vscode.Uri {
-    return this.gitApi.toGitUri(vscode.Uri.file(nodePath.join(this.workspaceFolder, relPath)), hash);
-  }
-
-  private async executeCommand(command: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      exec(command, { cwd: this.workspaceFolder }, (error, stdout, stderr) => {
-        if (error) {
-          if (error.message.startsWith('Command failed:')) {
-            return reject(new CommandError(stderr));
-          }
-
-          return reject(error);
-        }
-
-        if (stderr) { return reject(new CommandError(stderr)); }
-        resolve(stdout);
-      });
-    });
-  }
-
-  private sortFiles(files: CommitFile[]): CommitFile[] {
+  private sortChanges(files: Change[]): Change[] {
     return files.sort((a, b) => {
-      const aParts = a.relPath.split("/");
-      const bParts = b.relPath.split("/");
+      const aParts = a.uri.fsPath.split("/");
+      const bParts = b.uri.fsPath.split("/");
 
       if (aParts.length < bParts.length) { return 1; }
       if (aParts.length > bParts.length) { return -1; }

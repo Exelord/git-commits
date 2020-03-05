@@ -55,11 +55,6 @@
         "icon": "$(files)"
       },
       {
-        "command": "gitCommits.revertFile",
-        "title": "Revert changes",
-        "icon": "$(discard)"
-      },
-      {
         "command": "gitCommits.openFile",
         "title": "Open file",
         "icon": "$(go-to-file)"
@@ -83,11 +78,6 @@
           "command": "gitCommits.openFile",
           "when": "view == gitCommits && viewItem == fileNode",
           "group": "inline@1"
-        },
-        {
-          "command": "gitCommits.revertFile",
-          "when": "view == gitCommits && viewItem == fileNode",
-          "group": "inline@2"
         },
         {
           "command": "gitCommits.copyFilePath",

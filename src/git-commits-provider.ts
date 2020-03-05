@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Repository, API } from './ext/git';
 import { CommitNode } from './commit-node';
 import { GitManager } from './git-manager';
-import { FileNode } from './file-node';
+import { ChangeNode } from './change-node';
 
 export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<CommitNode | undefined> = new vscode.EventEmitter<CommitNode | undefined>();
@@ -44,8 +44,8 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 
 	async getChildren(commitNode?: CommitNode): Promise<vscode.TreeItem[]> {
 		if (commitNode) {
-			const files = await commitNode.manager.fetchCommitFiles(commitNode.commit);
-			return files.map((file) => new FileNode(file, commitNode.manager));
+			const changes = await commitNode.manager.commitChanges(commitNode.commit);
+			return changes.map((change) => new ChangeNode(change, commitNode.manager));
 		} else {
 			if (!this.manager) { return []; }
 			const commits = await this.manager.fetchCommits(20);
