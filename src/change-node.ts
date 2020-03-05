@@ -25,7 +25,7 @@ export class ChangeNode extends vscode.TreeItem {
 		this.description = parts.join('/');
 		this.resourceUri = change.uri;
 		this.tooltip = `${this.relPath} • ${status.name}`;
-		this.contextValue = 'fileNode';
+		this.contextValue = 'changeNode';
 		this.command = {
 			title: "diff",
 			command: "gitCommits.diffChange",

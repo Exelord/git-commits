@@ -76,12 +76,12 @@
         },
         {
           "command": "gitCommits.openFile",
-          "when": "view == gitCommits && viewItem == fileNode",
+          "when": "view == gitCommits && viewItem == changeNode",
           "group": "inline@1"
         },
         {
           "command": "gitCommits.copyFilePath",
-          "when": "view == gitCommits && viewItem == fileNode",
+          "when": "view == gitCommits && viewItem == changeNode",
           "group": "inline@3"
         }
       ]
