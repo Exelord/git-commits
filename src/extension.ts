@@ -4,6 +4,9 @@ import * as vscode from 'vscode';
 import { GitCommitsProvider } from './git-commits-provider';
 import { GitExtension, Status } from './ext/git';
 
+import * as childProcess from 'child_process';
+import * as fs from 'fs';
+
 export function activate(context: vscode.ExtensionContext) {
 	const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
 
@@ -31,8 +34,31 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand('gitCommits.openFile', async (item: ChangeNode) => {
-			const uri = item.change.status === Status.DELETED ? item.change.originalUri : item.change.uri;
-			await vscode.commands.executeCommand('vscode.open', uri);
+
+		vscode.commands.registerCommand('gitCommits.revertChange', async (item: ChangeNode) => {
+			const result = await vscode.window.showInformationMessage("Are you sure you want to revert these changes?", { modal: true }, { title: 'Revert changes' });
+
+			
+			if (result) {
+				let command;
+
+				if (item.change.status === Status.INDEX_ADDED) {
+					const fileExist = fs.existsSync(item.change.uri.fsPath);
+					
+					if (fileExist) {
+						command = `rm '${item.relPath}' && git add '${item.relPath}'`;	
+					} else {
+						await vscode.window.showInformationMessage('This change is already reverted');
+					}
+				} else {
+					command = `git checkout ${item.change.commit.parentHash} -- '${item.originalRelPath}'`;
+				}
+
+				if (command) {
+					childProcess.execSync(command, { cwd: item.change.commit.repository.rootUri.fsPath });
+					await vscode.window.showInformationMessage('Change has been reverted');
+				}
+			}
 		})
 	);
 }

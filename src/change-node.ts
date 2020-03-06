@@ -11,11 +11,13 @@ const statuses = {
 
 export class ChangeNode extends vscode.TreeItem {
 	relPath: string;
+	originalRelPath: string;
 
 	constructor(public change: Change, public manager: GitManager) {
 		super(change.uri.fsPath);
 		
-		this.relPath = change.uri.fsPath.replace(change.commit.repository.rootUri.fsPath, '');
+		this.relPath = change.uri.fsPath.replace(`${change.commit.repository.rootUri.fsPath}/`, '');
+		this.originalRelPath = change.originalUri.fsPath.replace(`${change.commit.repository.rootUri.fsPath}/`, '');
 
 		const status = statuses[change.status];
 		const parts = this.relPath.split('/');
