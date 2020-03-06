@@ -29,13 +29,19 @@ export function activate(context: vscode.ExtensionContext) {
 			await item.manager.diffChange(item.change);
 		}),
 
+		vscode.commands.registerCommand('gitCommits.diffChangeWithHead', async (item: ChangeNode) => {
+			const fileExist = fs.existsSync(item.change.uri.fsPath);
+			if (!fileExist) { return vscode.window.showErrorMessage('This file does not exist anymore'); }
+			await item.manager.diffChangeWithHead(item.change);
+		}),
+
 		vscode.commands.registerCommand('gitCommits.copyFilePath', async (item: ChangeNode) => {
 			await vscode.env.clipboard.writeText(item.relPath);
 		}),
 
 		vscode.commands.registerCommand('gitCommits.openFile', async (item: ChangeNode) => {
 			const fileExist = fs.existsSync(item.change.uri.fsPath);
-			if (!fileExist) { return vscode.window.showErrorMessage('This files does not exist anymore'); }
+			if (!fileExist) { return vscode.window.showErrorMessage('This file does not exist anymore'); }
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(item.change.uri.fsPath));
 		}),
 

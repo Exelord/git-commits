@@ -69,6 +69,14 @@ export class GitManager {
     await vscode.commands.executeCommand("vscode.diff", change.originalUri, change.uri, title, options);
   }
 
+  async diffChangeWithHead(change: Change): Promise<void> {
+    const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
+    const fileName = nodePath.basename(change.uri.fsPath);
+    const title = `${fileName} (${change.commit.shortHash}) ⟷ ${fileName} (current)`;
+
+    await vscode.commands.executeCommand("vscode.diff", change.uri, vscode.Uri.file(change.uri.fsPath), title, options);
+  }
+
   private sortChanges(files: Change[]): Change[] {
     return files.sort((a, b) => {
       const aParts = a.uri.fsPath.split("/");

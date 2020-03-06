@@ -54,6 +54,11 @@
         "icon": "$(files)"
       },
       {
+        "command": "gitCommits.diffChangeWithHead",
+        "title": "Diff with current file",
+        "icon": "$(diff)"
+      },
+      {
         "command": "gitCommits.copyFilePath",
         "title": "Copy file path",
         "icon": "$(files)"
@@ -84,19 +89,24 @@
           "group": "inline"
         },
         {
-          "command": "gitCommits.openFile",
+          "command": "gitCommits.diffChangeWithHead",
           "when": "view == gitCommits && viewItem == changeNode",
           "group": "inline@1"
         },
         {
-          "command": "gitCommits.revertChange",
+          "command": "gitCommits.openFile",
           "when": "view == gitCommits && viewItem == changeNode",
           "group": "inline@2"
         },
         {
-          "command": "gitCommits.copyFilePath",
+          "command": "gitCommits.revertChange",
           "when": "view == gitCommits && viewItem == changeNode",
           "group": "inline@3"
+        },
+        {
+          "command": "gitCommits.copyFilePath",
+          "when": "view == gitCommits && viewItem == changeNode",
+          "group": "inline@4"
         }
       ]
     }
