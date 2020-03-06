@@ -16,6 +16,7 @@ export class CommitNode extends vscode.TreeItem {
 
 		this.tooltip = [
 			`${commit.authorName} (${commit.authorEmail}) -- ${commit.shortHash}`,
+			'',
 			commit.authorDate,
 			'',
 			commit.message

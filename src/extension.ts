@@ -34,6 +34,10 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand('gitCommits.openFile', async (item: ChangeNode) => {
+			const fileExist = fs.existsSync(item.change.uri.fsPath);
+			if (!fileExist) { return vscode.window.showErrorMessage('This files does not exist anymore'); }
+			await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(item.change.uri.fsPath));
+		}),
 
 		vscode.commands.registerCommand('gitCommits.revertChange', async (item: ChangeNode) => {
 			const result = await vscode.window.showInformationMessage("Are you sure you want to revert these changes?", { modal: true }, { title: 'Revert changes' });
