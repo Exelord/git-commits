@@ -7,7 +7,7 @@
 List last commits and stashes in SCM tab. No need for git log, git stash, quick overview for current branch.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Exelord/git-commits/master/example.png" alt="example"/>
+  <img src="https://raw.githubusercontent.com/Exelord/git-commits/master/example.gif" alt="example"/>
 </p>
 
 ## Features
