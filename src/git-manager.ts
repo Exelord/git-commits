@@ -1,8 +1,10 @@
 import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange } from './ext/git.d';
 import * as vscode from "vscode";
 import * as nodePath from 'path';
+import * as childProcess from 'child_process';
 
 export interface Commit extends GitCommit {
+  index?: number;
   shortHash: string;
   parentHash: string;
   parentShortHash: string;
@@ -16,16 +18,25 @@ export interface Change extends GitChange {
   originalUri: vscode.Uri;
 }
 
-class CommandError extends Error {
-  constructor(message: string) {
-    super(message);
-
-    this.name = 'CommandError';
-  }
-}
-
 export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
+
+  async fetchStashes(): Promise<Commit[]> {
+    const output = await this.executeGitCommand(`stash list --pretty=format:'{%n  "hash": "%H",%n  "parents": "%P",%n  "message": "%s",%n  "authorName": "%aN",%n  "authorDate": "%aD",%n  "authorEmail": "%aE"%n},'`);
+    const commits = JSON.parse(`[${output.slice(0, -1)}]` || '[]');
+
+    return commits.map((commit: any, index: number) => {
+      commit.index = index;
+      commit.authorDate = new Date(commit.authorDate);
+      commit.parents = commit.parents.split(' ');
+      commit.parentHash = commit.parents.shift() || commit.hash;
+      commit.shortHash = commit.hash.substr(0, 7);
+      commit.parentShortHash = commit.parentHash.substr(0, 7);
+      commit.repository = this.repository;
+
+      return commit as GitCommit;
+    });
+  }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
     const commits = await this.repository.log({ maxEntries }).catch((error: Error) => {
@@ -86,6 +97,15 @@ export class GitManager {
       if (aParts.length > bParts.length) { return -1; }
     
       return aParts.find((aPart, index) => aPart < bParts[index]) ? -1 : 1;
+    });
+  }
+
+  private async executeGitCommand(command: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      childProcess.exec(`git ${command}`, { cwd: this.repository.rootUri.fsPath }, (error, stdout) => {
+        if (error) { return reject(error); }
+        return resolve(stdout);
+      });
     });
   }
 }

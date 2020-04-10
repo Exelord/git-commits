@@ -2,6 +2,7 @@ import { ChangeNode } from './change-node';
 import { CommitNode } from './commit-node';
 import * as vscode from 'vscode';
 import { GitCommitsProvider } from './git-commits-provider';
+import { GitStashesProvider } from './git-stashes-provider';
 import { GitExtension, Status } from './ext/git';
 
 import * as childProcess from 'child_process';
@@ -14,10 +15,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const gitApi = gitExtension.exports.getAPI(1);
 	const gitCommitsProvider = new GitCommitsProvider(gitApi);
+	const gitStashesProvider = new GitStashesProvider(gitApi);
 
 	context.subscriptions.push(
-		vscode.window.createTreeView('gitCommits', { 
+		vscode.window.createTreeView('gitCommits.commits', { 
       treeDataProvider: gitCommitsProvider, 
+      showCollapseAll: true 
+		}),
+
+		vscode.window.createTreeView('gitCommits.stashes', { 
+      treeDataProvider: gitStashesProvider, 
       showCollapseAll: true 
 		}),
 		
@@ -69,6 +76,44 @@ export function activate(context: vscode.ExtensionContext) {
 					await vscode.window.showInformationMessage('Change has been reverted');
 				}
 			}
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stash', async () => {
+			await vscode.commands.executeCommand('git.stash');
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stashIncludeUntracked', async () => {
+			await vscode.commands.executeCommand('git.stashIncludeUntracked');
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stashPopLatest', async () => {
+			const result = await vscode.window.showInformationMessage("Are you sure you want to apply and remove the stash item?", { modal: true }, { title: 'Pop stash item' });
+			if (!result) { return false; }
+			await vscode.commands.executeCommand('git.stashPopLatest');
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stashApplyLatest', async () => {
+			const result = await vscode.window.showInformationMessage("Are you sure you want to apply the stash item?", { modal: true }, { title: 'Apply stash item' });
+			if (!result) { return false; }
+			await vscode.commands.executeCommand('git.stashApplyLatest');
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stashPop', async (item: CommitNode) => {
+			const result = await vscode.window.showInformationMessage("Are you sure you want to apply and remove the stash item?", { modal: true }, { title: 'Pop stash item' });
+			if (!result) { return false; }
+			await item.commit.repository._repository.popStash(item.commit.index);
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stashApply', async (item: CommitNode) => {
+			const result = await vscode.window.showInformationMessage("Are you sure you want to apply the stash item?", { modal: true }, { title: 'Apply stash item' });
+			if (!result) { return false; }
+			await item.commit.repository._repository.applyStash(item.commit.index);
+		}),
+
+		vscode.commands.registerCommand('gitCommits.stashDrop', async (item: CommitNode) => {
+			const result = await vscode.window.showInformationMessage("Are you sure you want to remove the stash item?", { modal: true }, { title: 'Remove stash item' });
+			if (!result) { return false; }
+			await item.commit.repository._repository.dropStash(item.commit.index);
 		})
 	);
 }

@@ -29,15 +29,21 @@
     "vscode"
   ],
   "activationEvents": [
-    "onView:gitCommits"
+    "onView:gitCommits.commits",
+    "onView:gitCommits.stashes"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "views": {
       "scm": [
         {
-          "id": "gitCommits",
+          "id": "gitCommits.commits",
           "name": "Commits",
+          "when": "gitOpenRepositoryCount != 0"
+        },
+        {
+          "id": "gitCommits.stashes",
+          "name": "Stashes",
           "when": "gitOpenRepositoryCount != 0"
         }
       ]
@@ -72,41 +78,111 @@
         "command": "gitCommits.revertChange",
         "title": "Revert file",
         "icon": "$(discard)"
+      },
+      {
+        "command": "gitCommits.stash",
+        "title": "Stash",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "gitCommits.stashIncludeUntracked",
+        "title": "Stash (include untracked)",
+        "icon": "$(inbox)"
+      },
+      {
+        "command": "gitCommits.stashPopLatest",
+        "title": "Pop latest",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "gitCommits.stashApplyLatest",
+        "title": "Apply latest",
+        "icon": "$(output)"
+      },
+      {
+        "command": "gitCommits.stashPop",
+        "title": "Pop",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "gitCommits.stashApply",
+        "title": "Apply",
+        "icon": "$(output)"
+      },
+      {
+        "command": "gitCommits.stashDrop",
+        "title": "Drop",
+        "icon": "$(trash)"
       }
     ],
     "menus": {
       "view/title": [
         {
           "command": "git.undoCommit",
-          "when": "view == gitCommits",
+          "when": "view == gitCommits.commits",
           "group": "navigation"
+        },
+        {
+          "command": "gitCommits.stashPopLatest",
+          "when": "view == gitCommits.stashes",
+          "group": "navigation@4"
+        },
+        {
+          "command": "gitCommits.stashApplyLatest",
+          "when": "view == gitCommits.stashes",
+          "group": "navigation@3"
+        },
+        {
+          "command": "gitCommits.stash",
+          "when": "view == gitCommits.stashes",
+          "group": "navigation@1"
+        },
+        {
+          "command": "gitCommits.stashIncludeUntracked",
+          "when": "view == gitCommits.stashes",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
         {
           "command": "gitCommits.copyCommitHash",
-          "when": "view == gitCommits && viewItem == commitNode",
+          "when": "view == gitCommits.commits && viewItem == commitNode",
           "group": "inline"
         },
         {
           "command": "gitCommits.diffChangeWithHead",
-          "when": "view == gitCommits && viewItem == changeNode",
+          "when": "view == gitCommits.commits && viewItem == changeNode",
           "group": "inline@1"
         },
         {
           "command": "gitCommits.openFile",
-          "when": "view == gitCommits && viewItem == changeNode",
+          "when": "view == gitCommits.commits || view == gitCommits.stashes && viewItem == changeNode",
           "group": "inline@2"
         },
         {
           "command": "gitCommits.revertChange",
-          "when": "view == gitCommits && viewItem == changeNode",
+          "when": "view == gitCommits.commits && viewItem == changeNode",
           "group": "inline@3"
         },
         {
           "command": "gitCommits.copyFilePath",
-          "when": "view == gitCommits && viewItem == changeNode",
+          "when": "view == gitCommits.commits || view == gitCommits.stashes && viewItem == changeNode",
           "group": "inline@4"
+        },
+        {
+          "command": "gitCommits.stashApply",
+          "when": "view == gitCommits.stashes && viewItem == commitNode",
+          "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.stashPop",
+          "when": "view == gitCommits.stashes && viewItem == commitNode",
+          "group": "inline@2"
+        },
+        {
+          "command": "gitCommits.stashDrop",
+          "when": "view == gitCommits.stashes && viewItem == commitNode",
+          "group": "inline@3"
         }
       ]
     }

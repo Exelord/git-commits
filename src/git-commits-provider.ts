@@ -8,9 +8,9 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	private _onDidChangeTreeData: vscode.EventEmitter<CommitNode | undefined> = new vscode.EventEmitter<CommitNode | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<CommitNode | undefined> = this._onDidChangeTreeData.event;
 	
-	private _stateObserver?: vscode.Disposable;
-	private currentState?: string;
-	private manager?: GitManager;
+	protected _stateObserver?: vscode.Disposable;
+	protected currentState?: string;
+	protected manager?: GitManager;
 
 	constructor(public gitApi: API) {
 		gitApi.repositories.forEach((repository) => {
@@ -48,12 +48,16 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 			return changes.map((change) => new ChangeNode(change, commitNode.manager));
 		} else {
 			if (!this.manager) { return []; }
-			const commits = await this.manager.fetchCommits(20);
+			const commits = await this.fetchCommits(this.manager);
 			return commits.map((commit) => new CommitNode(commit, this.manager as GitManager));
 		}
 	}
 
-	private observeRepositoryState(repository: Repository) {
+	protected async fetchCommits(manager: GitManager) {
+		return manager.fetchCommits(20);
+	}
+
+	protected observeRepositoryState(repository: Repository) {
 		if (this._stateObserver) { this._stateObserver.dispose(); }
 		
 		this._stateObserver = repository.state.onDidChange(() => {
