@@ -25,6 +25,8 @@
     "diff",
     "commits",
     "list",
+    "stash",
+    "stashes",
     "atom",
     "vscode"
   ],
