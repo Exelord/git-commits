@@ -4,7 +4,7 @@
 
 # git-commits
 
-List last commits in SCM tab like in Atom editor. No need for git log, quick overview for current branch.
+List last commits and stashes in SCM tab. No need for git log, git stash, quick overview for current branch.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Exelord/git-commits/master/example.png" alt="example"/>
@@ -12,10 +12,12 @@ List last commits in SCM tab like in Atom editor. No need for git log, quick ove
 
 ## Features
 
-- list last commits
-- quickly undo last commit
+- List last commits
+- Quickly undo last commit
 - Preview commit changes (diff files)
 - Revert file changes
 - Easily copy commit hash and file path
+- List all stashes
+- Apply, pop, drop and crate stashes
 
 **Enjoy!**
