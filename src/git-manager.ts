@@ -22,36 +22,16 @@ export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
   async fetchStashes(): Promise<Commit[]> {
-    const output = await this.executeGitCommand(`stash list --pretty=format:'{%n  "hash": "%H",%n  "parents": "%P",%n  "message": "%s",%n  "authorName": "%aN",%n  "authorDate": "%aD",%n  "authorEmail": "%aE"%n},'`);
-    const commits = JSON.parse(`[${output.slice(0, -1)}]` || '[]');
-
-    return commits.map((commit: any, index: number) => {
-      commit.index = index;
-      commit.authorDate = new Date(commit.authorDate);
-      commit.parents = commit.parents.split(' ');
-      commit.parentHash = commit.parents.shift() || commit.hash;
-      commit.shortHash = commit.hash.substr(0, 7);
-      commit.parentShortHash = commit.parentHash.substr(0, 7);
-      commit.repository = this.repository;
-
-      return commit as GitCommit;
-    });
+    return this.getCommits('stash list');
   }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
-    const commits = await this.repository.log({ maxEntries }).catch((error: Error) => {
+    const gitCommits = await this.repository.log({ maxEntries }).catch((error: Error) => {
       if (error.message.endsWith('does not have any commits yet')) { return []; }
       throw error;
-    }) as Commit[];
+    }) as GitCommit[];
 
-    return commits.map((commit) => {
-      commit.parentHash = commit.parents.shift() || commit.hash;
-      commit.shortHash = commit.hash.substr(0, 7);
-      commit.parentShortHash = commit.parentHash.substr(0, 7);
-      commit.repository = this.repository;
-
-      return commit;
-    });
+    return this.convertToCommits(gitCommits);
   }
 
   async commitChanges(commit: Commit): Promise<Change[]> {
@@ -97,6 +77,32 @@ export class GitManager {
       if (aParts.length > bParts.length) { return -1; }
     
       return aParts.find((aPart, index) => aPart < bParts[index]) ? -1 : 1;
+    });
+  }
+
+  private async getCommits(command: string) {
+    const output = await this.executeGitCommand(`${command} --pretty=format:'{%n  "hash": "%H",%n  "parents": "%P",%n  "message": "%s",%n  "authorName": "%aN",%n  "authorDate": "%aD",%n  "authorEmail": "%aE"%n},'`);
+    const commits = JSON.parse(`[${output.slice(0, -1)}]` || '[]');
+
+    const gitCommits = commits.map((commit: any) => {
+      commit.authorDate = new Date(commit.authorDate);
+      commit.parents = commit.parents.split(' ');
+
+      return commit as GitCommit;
+    });
+
+    return this.convertToCommits(gitCommits);
+  }
+
+  private convertToCommits(commits: GitCommit[]): Commit[] {
+    return commits.map((commit: any, index: number) => {
+      commit.index = index;
+      commit.parentHash = commit.parents.shift() || commit.hash;
+      commit.shortHash = commit.hash.substr(0, 7);
+      commit.parentShortHash = commit.parentHash.substr(0, 7);
+      commit.repository = this.repository;
+
+      return commit as Commit;
     });
   }
 
