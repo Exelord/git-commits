@@ -72,9 +72,14 @@
         "icon": "$(files)"
       },
       {
-        "command": "gitCommits.openFile",
-        "title": "Open file",
+        "command": "gitCommits.openCurrentFile",
+        "title": "Open current file",
         "icon": "$(go-to-file)"
+      },
+      {
+        "command": "gitCommits.previewFile",
+        "title": "Preview file",
+        "icon": "$(file-code)"
       },
       {
         "command": "gitCommits.revertChange",
@@ -93,7 +98,7 @@
       },
       {
         "command": "gitCommits.stashPopLatest",
-        "title": "Pop latest",
+        "title": "Apply and remove latest",
         "icon": "$(discard)"
       },
       {
@@ -103,7 +108,7 @@
       },
       {
         "command": "gitCommits.stashPop",
-        "title": "Pop",
+        "title": "Apply and remove",
         "icon": "$(discard)"
       },
       {
@@ -113,7 +118,7 @@
       },
       {
         "command": "gitCommits.stashDrop",
-        "title": "Drop",
+        "title": "Remove",
         "icon": "$(trash)"
       }
     ],
@@ -157,19 +162,44 @@
           "group": "inline@1"
         },
         {
-          "command": "gitCommits.openFile",
-          "when": "view == gitCommits.commits || view == gitCommits.stashes && viewItem == changeNode",
+          "command": "gitCommits.diffChangeWithHead",
+          "when": "view == gitCommits.stashes && viewItem == changeNode",
+          "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.openCurrentFile",
+          "when": "view == gitCommits.commits && viewItem == changeNode",
           "group": "inline@2"
         },
         {
-          "command": "gitCommits.revertChange",
+          "command": "gitCommits.openCurrentFile",
+          "when": "view == gitCommits.stashes && viewItem == changeNode",
+          "group": "inline@2"
+        },
+        {
+          "command": "gitCommits.previewFile",
           "when": "view == gitCommits.commits && viewItem == changeNode",
           "group": "inline@3"
         },
         {
-          "command": "gitCommits.copyFilePath",
-          "when": "view == gitCommits.commits || view == gitCommits.stashes && viewItem == changeNode",
+          "command": "gitCommits.previewFile",
+          "when": "view == gitCommits.stashes && viewItem == changeNode",
+          "group": "inline@3"
+        },
+        {
+          "command": "gitCommits.revertChange",
+          "when": "view == gitCommits.commits && viewItem == changeNode",
           "group": "inline@4"
+        },
+        {
+          "command": "gitCommits.copyFilePath",
+          "when": "view == gitCommits.commits && viewItem == changeNode",
+          "group": "inline@5"
+        },
+        {
+          "command": "gitCommits.copyFilePath",
+          "when": "view == gitCommits.stashes && viewItem == changeNode",
+          "group": "inline@5"
         },
         {
           "command": "gitCommits.stashApply",
