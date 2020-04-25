@@ -37,9 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand('gitCommits.diffChangeWithHead', async (item: ChangeNode) => {
-			const fileExist = fs.existsSync(item.change.uri.fsPath);
-			if (!fileExist) { return vscode.window.showErrorMessage('This file does not exist anymore'); }
 			await item.manager.diffChangeWithHead(item.change);
+		}),
+
+		vscode.commands.registerCommand('gitCommits.reversedDiffChangeWithHead', async (item: ChangeNode) => {
+			await item.manager.diffChangeWithHead(item.change, true);
 		}),
 
 		vscode.commands.registerCommand('gitCommits.copyFilePath', async (item: ChangeNode) => {

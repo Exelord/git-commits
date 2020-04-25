@@ -18,6 +18,11 @@ export interface Change extends GitChange {
   originalUri: vscode.Uri;
 }
 
+export interface DiffSide {
+  label: string;
+  uri: vscode.Uri;
+}
+
 export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
@@ -52,20 +57,24 @@ export class GitManager {
   }
 
   async diffChange(change: Change): Promise<void> {
-    const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    const leftSideBaseName = nodePath.basename(change.originalUri.fsPath);
-    const rightSideBaseName = nodePath.basename(change.uri.fsPath);
-    const title = `${leftSideBaseName} (${change.commit.parentShortHash}) ⟷ ${rightSideBaseName} (${change.commit.shortHash})`;
+    const leftSide = { uri: change.originalUri, label: change.commit.parentShortHash };
+    const rightSide = { uri: change.uri, label: change.commit.shortHash };
 
-    await vscode.commands.executeCommand("vscode.diff", change.originalUri, change.uri, title, options);
+    await this.diff(leftSide, rightSide);
   }
 
-  async diffChangeWithHead(change: Change): Promise<void> {
-    const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    const fileName = nodePath.basename(change.uri.fsPath);
-    const title = `${fileName} (${change.commit.shortHash}) ⟷ ${fileName} (current)`;
+  async diffChangeWithHead(change: Change, reversed = false): Promise<void> {
+    const leftSide = {  uri: change.uri, label: change.commit.shortHash };
+    const rightSide = { uri: this.gitApi.toGitUri(vscode.Uri.file(change.uri.fsPath), 'HEAD'), label: 'current' };
 
-    await vscode.commands.executeCommand("vscode.diff", change.uri, vscode.Uri.file(change.uri.fsPath), title, options);
+    await (reversed ? this.diff(rightSide, leftSide) : this.diff(leftSide, rightSide));
+  }
+
+  private async diff(leftSide: DiffSide, rightSide: DiffSide) {
+    const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
+    const title = `${nodePath.basename(leftSide.uri.fsPath)} (${leftSide.label}) ⟷ ${nodePath.basename(rightSide.uri.fsPath)} (${rightSide.label})`;
+
+    await vscode.commands.executeCommand("vscode.diff", leftSide.uri, rightSide.uri, title, options);
   }
 
   private sortChanges(files: Change[]): Change[] {

@@ -67,6 +67,11 @@
         "icon": "$(diff)"
       },
       {
+        "command": "gitCommits.reversedDiffChangeWithHead",
+        "title": "Diff with current file",
+        "icon": "$(diff)"
+      },
+      {
         "command": "gitCommits.copyFilePath",
         "title": "Copy file path",
         "icon": "$(files)"
@@ -162,7 +167,7 @@
           "group": "inline@1"
         },
         {
-          "command": "gitCommits.diffChangeWithHead",
+          "command": "gitCommits.reversedDiffChangeWithHead",
           "when": "view == gitCommits.stashes && viewItem == changeNode",
           "group": "inline@1"
         },
