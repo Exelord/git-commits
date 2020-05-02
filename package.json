@@ -52,7 +52,7 @@
     },
     "commands": [
       {
-        "command": "git.undoCommit",
+        "command": "gitCommits.undoCommit",
         "title": "Undo last commit",
         "icon": "$(discard)"
       },
@@ -130,7 +130,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "git.undoCommit",
+          "command": "gitCommits.undoCommit",
           "when": "view == gitCommits.commits",
           "group": "navigation"
         },

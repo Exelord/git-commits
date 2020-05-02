@@ -28,6 +28,10 @@ export function activate(context: vscode.ExtensionContext) {
       showCollapseAll: true 
 		}),
 		
+		vscode.commands.registerCommand('gitCommits.undoCommit', async (item: CommitNode) => {
+			await vscode.commands.executeCommand('git.undoCommit', item);
+		}),
+		
 		vscode.commands.registerCommand('gitCommits.copyCommitHash', async (item: CommitNode) => {
 			await vscode.env.clipboard.writeText(item.commit.hash);
 		}),
