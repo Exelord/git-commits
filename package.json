@@ -254,9 +254,6 @@
     },
     "github": {
       "release": true
-    },
-    "hooks": {
-      "after:release": "vsce publish"
     }
   },
   "dependencies": {
