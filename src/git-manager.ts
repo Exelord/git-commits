@@ -31,12 +31,7 @@ export class GitManager {
   }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
-    const gitCommits = await this.repository.log({ maxEntries }).catch((error: Error) => {
-      if (error.message.endsWith('does not have any commits yet')) { return []; }
-      throw error;
-    }) as GitCommit[];
-
-    return this.convertToCommits(gitCommits);
+    return this.getCommits('log', [`-n${maxEntries}`, '--first-parent']);
   }
 
   async commitChanges(commit: Commit): Promise<Change[]> {
@@ -89,8 +84,13 @@ export class GitManager {
     });
   }
 
-  private async getCommits(command: string) {
-    const output = await this.executeGitCommand(`${command} --pretty=format:'{%n  "hash": "%H",%n  "parents": "%P",%n  "message": "%s",%n  "authorName": "%aN",%n  "authorDate": "%aD",%n  "authorEmail": "%aE"%n},'`);
+  private async getCommits(command: string, customArgs: string[] = []) {
+    const args = [
+      ...customArgs,
+      `--pretty=format:'{%n  "hash": "%H",%n  "parents": "%P",%n  "message": "%s",%n  "authorName": "%aN",%n  "authorDate": "%aD",%n  "authorEmail": "%aE"%n},'`
+    ];
+
+    const output = await this.executeGitCommand(`${command} ${args.join(' ')} --`);
     const commits = JSON.parse(`[${output.slice(0, -1)}]` || '[]');
 
     const gitCommits = commits.map((commit: any) => {
