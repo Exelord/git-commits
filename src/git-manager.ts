@@ -87,11 +87,16 @@ export class GitManager {
   private async getCommits(command: string, customArgs: string[] = []) {
     const args = [
       ...customArgs,
-      `--pretty=format:'{%n  "hash": "%H",%n  "parents": "%P",%n  "message": "%s",%n  "authorName": "%aN",%n  "authorDate": "%aD",%n  "authorEmail": "%aE"%n},'`
+      `--format='{ "hash": "%H", "parents": "%P", "message": "%s", "authorName": "%aN", "authorDate": "%aD", "authorEmail": "%aE" },'`,
+      '--'
     ];
 
-    const output = await this.executeGitCommand(`${command} ${args.join(' ')} --`);
-    const commits = JSON.parse(`[${output.slice(0, -1)}]` || '[]');
+    const output = await this.executeGitCommand(`${command} ${args.join(' ')}`).catch((error) => {
+      if (error.code === 128) { return ''; }
+      throw error;
+    });
+
+    const commits = JSON.parse(`[${output.slice(0, -2)}]` || '[]');
 
     const gitCommits = commits.map((commit: any) => {
       commit.authorDate = new Date(commit.authorDate);
