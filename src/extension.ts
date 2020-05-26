@@ -3,7 +3,7 @@ import { CommitNode } from './commit-node';
 import * as vscode from 'vscode';
 import { GitCommitsProvider } from './git-commits-provider';
 import { GitStashesProvider } from './git-stashes-provider';
-import { GitExtension, Status } from './ext/git';
+import { GitExtension, Status } from './ext/git.d';
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs';

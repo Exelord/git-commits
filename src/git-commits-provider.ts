@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Repository, API } from './ext/git';
+import { Repository, API } from './ext/git.d';
 import { CommitNode } from './commit-node';
 import { GitManager } from './git-manager';
 import { ChangeNode } from './change-node';

@@ -1,4 +1,4 @@
-import { Repository } from './ext/git';
+import { Repository } from './ext/git.d';
 import { GitManager } from './git-manager';
 import { GitCommitsProvider } from './git-commits-provider';
 

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { GitManager, Change } from './git-manager';
-import { Status } from './ext/git';
+import { Status } from './ext/git.d';
 
 const statuses = {
 	[Status.INDEX_ADDED]: { letter: "💚", name: 'Added' },

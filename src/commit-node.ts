@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Commit, GitManager } from './git-manager';
-import { Remote } from './ext/git';
+import { Remote } from './ext/git.d';
 import { createHash } from 'crypto';
 import { selectUnit } from '@formatjs/intl-utils';
 
