@@ -35,7 +35,7 @@ export class GitCommitsProvider implements vscode.TreeDataProvider<vscode.TreeIt
 	}
 
 	refresh(): void {
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(undefined);
 	}
 
 	getTreeItem(element: CommitNode): vscode.TreeItem {
