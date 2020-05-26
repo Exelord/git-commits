@@ -2,6 +2,9 @@ import { Repository as GitRepository, Commit as GitCommit, API, Change as GitCha
 import * as vscode from "vscode";
 import * as nodePath from 'path';
 import * as childProcess from 'child_process';
+import { parseGitCommits } from './ext/git';
+
+const COMMIT_FORMAT = '%H%n%aN%n%aE%n%at%n%ct%n%P%n%B';
 
 export interface Commit extends GitCommit {
   index?: number;
@@ -87,7 +90,8 @@ export class GitManager {
   private async getCommits(command: string, customArgs: string[] = []) {
     const args = [
       ...customArgs,
-      `--format='{ "hash": "%H", "parents": "%P", "message": "%s", "authorName": "%aN", "authorDate": "%aD", "authorEmail": "%aE" },'`,
+      `--format=${COMMIT_FORMAT}`,
+      '-z',
       '--'
     ];
 
@@ -96,16 +100,7 @@ export class GitManager {
       throw error;
     });
 
-    const commits = JSON.parse(`[${output.slice(0, -2)}]` || '[]');
-
-    const gitCommits = commits.map((commit: any) => {
-      commit.authorDate = new Date(commit.authorDate);
-      commit.parents = commit.parents.split(' ');
-
-      return commit as GitCommit;
-    });
-
-    return this.convertToCommits(gitCommits);
+    return this.convertToCommits(parseGitCommits(output));
   }
 
   private convertToCommits(commits: GitCommit[]): Commit[] {
