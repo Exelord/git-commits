@@ -144,6 +144,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 			await item.manager.repository.removeRemote(remoteName);
 		}),
+
+		vscode.commands.registerCommand('gitCommits.pullFromRemote', async (item: RemoteNode) => {
+			const remoteName = item.remote.name;
+			await item.manager.repository._repository.pullFrom(false, remoteName, item.manager.repository.state.HEAD?.name);
+		})
 	);
 }
 

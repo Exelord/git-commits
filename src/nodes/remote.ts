@@ -8,12 +8,14 @@ export class RemoteNode extends vscode.TreeItem {
 		
 		this.contextValue = 'remoteNode';
 		this.description = remote.fetchUrl;
+
+		const showPushUrl = remote.pushUrl && remote.pushUrl !== remote.fetchUrl;
 		
 		this.tooltip = [
 			`Name: ${remote.name}`,
 			`ReadOnly: ${remote.isReadOnly}`,
 			`FetchUrl: ${remote.fetchUrl}`,
-			remote.pushUrl ? `PushUrl: ${remote.pushUrl}` : undefined
+			showPushUrl ? `PushUrl: ${remote.pushUrl}` : undefined
 		].filter(Boolean).join('\n');
 
 		this.iconPath = new vscode.ThemeIcon('remote');

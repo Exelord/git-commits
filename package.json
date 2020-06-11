@@ -142,6 +142,11 @@
         "command": "gitCommits.removeRemote",
         "title": "Remove",
         "icon": "$(trash)"
+      },
+      {
+        "command": "gitCommits.pullFromRemote",
+        "title": "Pull",
+        "icon": "$(repo-pull)"
       }
     ],
     "menus": {
@@ -246,7 +251,12 @@
         {
           "command": "gitCommits.removeRemote",
           "when": "view == gitCommits.remotes",
-          "group": "inline"
+          "group": "inline@2"
+        },
+        {
+          "command": "gitCommits.pullFromRemote",
+          "when": "view == gitCommits.remotes",
+          "group": "inline@1"
         }
       ]
     }
