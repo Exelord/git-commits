@@ -3,10 +3,12 @@ import { CommitNode } from './nodes/commit';
 import * as vscode from 'vscode';
 import { GitCommitsProvider } from './providers/git-commits';
 import { GitStashesProvider } from './providers/git-stashes';
+import { GitRemotesProvider } from './providers/git-remotes';
 import { GitExtension, Status } from './ext/git.d';
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
+import { RemoteNode } from './nodes/remote';
 
 export function activate(context: vscode.ExtensionContext) {
 	const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git');
@@ -16,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const gitApi = gitExtension.exports.getAPI(1);
 	const gitCommitsProvider = new GitCommitsProvider(gitApi);
 	const gitStashesProvider = new GitStashesProvider(gitApi);
+	const gitRemotesProvider = new GitRemotesProvider(gitApi);
 
 	context.subscriptions.push(
 		vscode.window.createTreeView('gitCommits.commits', { 
@@ -26,6 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.createTreeView('gitCommits.stashes', { 
       treeDataProvider: gitStashesProvider, 
       showCollapseAll: true 
+		}),
+
+		vscode.window.createTreeView('gitCommits.remotes', { 
+      treeDataProvider: gitRemotesProvider, 
+      showCollapseAll: false 
 		}),
 		
 		vscode.commands.registerCommand('gitCommits.undoCommit', async (item: CommitNode) => {
@@ -122,7 +130,20 @@ export function activate(context: vscode.ExtensionContext) {
 			const result = await vscode.window.showInformationMessage("Are you sure you want to remove the stash item?", { modal: true }, { title: 'Remove stash item' });
 			if (!result) { return false; }
 			await item.commit.repository._repository.dropStash(item.commit.index);
-		})
+		}),
+
+		vscode.commands.registerCommand('gitCommits.addRemote', async () => {
+			await vscode.commands.executeCommand('git.addRemote');
+		}),
+
+		vscode.commands.registerCommand('gitCommits.removeRemote', async (item: RemoteNode) => {
+			const remoteName = item.remote.name;
+
+			const result = await vscode.window.showInformationMessage(`Are you sure you want to remove "${remoteName}" remote?`, { modal: true }, { title: 'Remove' });
+			if (!result) { return false; }
+
+			await item.manager.repository.removeRemote(remoteName);
+		}),
 	);
 }
 

@@ -21,13 +21,13 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		return element;
 	}
 
-	async getChildren(treeItem?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
+	async getChildren(_treeItem?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
 		return [];
 	}
 
-	protected onRepositoryChange(repository: Repository) {};
+	protected onRepositoryChange(_repository: Repository) {};
 
-	protected onStateChange(repository: Repository) {
+	protected onStateChange(_repository: Repository) {
 		this.refresh();
 	};
 

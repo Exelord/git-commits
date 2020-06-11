@@ -1,4 +1,4 @@
-import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange } from './ext/git.d';
+import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange, Remote } from './ext/git.d';
 import * as vscode from "vscode";
 import * as nodePath from 'path';
 import * as childProcess from 'child_process';
@@ -35,6 +35,10 @@ export class GitManager {
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
     return this.getCommits('log', [`-n${maxEntries}`, '--first-parent']);
+  }
+
+  async getRemotes(): Promise<Remote[]> {
+    return this.repository.state.remotes;
   }
 
   async commitChanges(commit: Commit): Promise<Change[]> {

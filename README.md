@@ -4,7 +4,7 @@
 
 # git-commits
 
-List last commits and stashes in SCM tab. No need for git log, git stash, quick overview for current branch.
+List last commits and stashes in SCM tab. No need for git log, git stash, quick overview for current repository.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Exelord/git-commits/master/example.gif" alt="example"/>
@@ -18,6 +18,7 @@ List last commits and stashes in SCM tab. No need for git log, git stash, quick 
 - Revert file changes
 - Easily copy commit hash and file path
 - List all stashes
-- Apply, pop, drop and crate stashes
+- Apply, pop, drop and create stashes
+- Manage remotes
 
 **Enjoy!**

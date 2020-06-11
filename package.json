@@ -27,12 +27,14 @@
     "list",
     "stash",
     "stashes",
+    "remotes",
     "atom",
     "vscode"
   ],
   "activationEvents": [
     "onView:gitCommits.commits",
-    "onView:gitCommits.stashes"
+    "onView:gitCommits.stashes",
+    "onView:gitCommits.remotes"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -46,6 +48,11 @@
         {
           "id": "gitCommits.stashes",
           "name": "Stashes",
+          "when": "gitOpenRepositoryCount != 0"
+        },
+        {
+          "id": "gitCommits.remotes",
+          "name": "Remotes",
           "when": "gitOpenRepositoryCount != 0"
         }
       ]
@@ -125,6 +132,16 @@
         "command": "gitCommits.stashDrop",
         "title": "Remove",
         "icon": "$(trash)"
+      },
+      {
+        "command": "gitCommits.addRemote",
+        "title": "Add",
+        "icon": "$(add)"
+      },
+      {
+        "command": "gitCommits.removeRemote",
+        "title": "Remove",
+        "icon": "$(trash)"
       }
     ],
     "menus": {
@@ -153,6 +170,11 @@
           "command": "gitCommits.stashIncludeUntracked",
           "when": "view == gitCommits.stashes",
           "group": "navigation@2"
+        },
+        {
+          "command": "gitCommits.addRemote",
+          "when": "view == gitCommits.remotes",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -220,6 +242,11 @@
           "command": "gitCommits.stashDrop",
           "when": "view == gitCommits.stashes && viewItem == commitNode",
           "group": "inline@3"
+        },
+        {
+          "command": "gitCommits.removeRemote",
+          "when": "view == gitCommits.remotes",
+          "group": "inline"
         }
       ]
     }
