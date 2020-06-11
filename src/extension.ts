@@ -1,8 +1,8 @@
-import { ChangeNode } from './change-node';
-import { CommitNode } from './commit-node';
+import { ChangeNode } from './nodes/change';
+import { CommitNode } from './nodes/commit';
 import * as vscode from 'vscode';
-import { GitCommitsProvider } from './git-commits-provider';
-import { GitStashesProvider } from './git-stashes-provider';
+import { GitCommitsProvider } from './providers/git-commits';
+import { GitStashesProvider } from './providers/git-stashes';
 import { GitExtension, Status } from './ext/git.d';
 
 import * as childProcess from 'child_process';
