@@ -36,8 +36,8 @@ export class CommitNode extends BaseNode {
 		return new (Intl as any).RelativeTimeFormat(vscode.env.language, { style: 'long' }).format(value, unit);
 	}
 
-	async getChildren() {
-		if (this.isMergeCommit) {
+	async getChildren(options = { showMergeChildren: true }) {
+		if (options.showMergeChildren && this.isMergeCommit) {
 			const commits = await this.manager.fetchCommitsByHash(this.commit.parents);
 			return commits.map((commit) => new CommitNode(commit, this.manager));
 		}

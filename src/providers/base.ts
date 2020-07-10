@@ -14,6 +14,10 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		this.trackRepositories();
 	}
 
+	get childrenOptions() {
+		return {};
+	}
+
 	refresh(): void {
 		this._onDidChangeTreeData.fire(undefined);
 	}
@@ -28,7 +32,7 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
 	async getChildren(childNode?: BaseNode): Promise<vscode.TreeItem[]> {
 		if (childNode) {
-			return childNode.getChildren();
+			return childNode.getChildren(this.childrenOptions);
 		}
 		
 		const { manager } = this;
