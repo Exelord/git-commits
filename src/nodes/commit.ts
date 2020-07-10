@@ -8,6 +8,7 @@ import { BaseNode } from './base';
 
 export class CommitNode extends BaseNode {
 	private avatarCache = new Map();
+	private isMergeCommit: boolean;
 
 	constructor(public commit: Commit, public manager: GitManager) {
 		super(commit.message, vscode.TreeItemCollapsibleState.Collapsed);
@@ -15,6 +16,7 @@ export class CommitNode extends BaseNode {
 		this.id = commit.hash;
 		this.description = this.relativeTime;
 		this.contextValue = 'commitNode';
+		this.isMergeCommit = this.commit.parents.length > 0;
 
 		this.tooltip = [
 			`${commit.authorName} (${commit.authorEmail}) -- ${commit.shortHash}`,
@@ -35,7 +37,12 @@ export class CommitNode extends BaseNode {
 	}
 
 	async getChildren() {
-		const changes = await this.manager.commitChanges(this.commit);
+		if (this.isMergeCommit) {
+			const commits = await this.manager.fetchCommitsByHash(this.commit.parents);
+			return commits.map((commit) => new CommitNode(commit, this.manager));
+		}
+		
+		const changes = await this.manager.fetchCommitChanges(this.commit);
 		return changes.map((change) => new ChangeNode(change, this.manager));
 	}
 

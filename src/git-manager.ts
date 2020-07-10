@@ -30,18 +30,22 @@ export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
   async fetchStashes(): Promise<Commit[]> {
-    return this.getCommits('stash list');
+    return this._fetchCommits('stash list');
   }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
-    return this.getCommits('log', [`-n${maxEntries}`, '--first-parent']);
+    return this._fetchCommits('log', [`-n${maxEntries}`, '--first-parent']);
   }
 
-  async getRemotes(): Promise<Remote[]> {
+  async fetchCommitsByHash(hashes: string[]): Promise<Commit[]> {
+    return this._fetchCommits('show', [...hashes, '--first-parent']);
+  }
+
+  async fetchRemotes(): Promise<Remote[]> {
     return this.repository.state.remotes;
   }
 
-  async commitChanges(commit: Commit): Promise<Change[]> {
+  async fetchCommitChanges(commit: Commit): Promise<Change[]> {
     const gitChanges = await this.repository.diffBetween(commit.parentHash, commit.hash);
     
     const changes = gitChanges.map((gitChange) => {
@@ -91,7 +95,7 @@ export class GitManager {
     });
   }
 
-  private async getCommits(command: string, customArgs: string[] = []) {
+  private async _fetchCommits(command: string, customArgs: string[] = []) {
     const args = [
       ...customArgs,
       `--format=${COMMIT_FORMAT}`,
