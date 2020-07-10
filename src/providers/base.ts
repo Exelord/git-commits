@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Repository, API } from '../ext/git.d';
 import { GitManager } from '../git-manager';
+import { BaseNode } from '../nodes/base';
 
 export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -21,8 +22,19 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		return element;
 	}
 
-	async getChildren(_treeItem?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
+	async getTreeItems(_manager: GitManager): Promise<vscode.TreeItem[]> {
 		return [];
+	}
+
+	async getChildren(childNode?: BaseNode): Promise<vscode.TreeItem[]> {
+		if (childNode) {
+			return childNode.getChildren();
+		}
+		
+		const { manager } = this;
+		if (!manager) { return []; }
+
+		return this.getTreeItems(manager);
 	}
 
 	protected onRepositoryChange(_repository: Repository) {};

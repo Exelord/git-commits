@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import { Repository } from '../ext/git.d';
 import { CommitNode } from '../nodes/commit';
-import { GitManager } from '../git-manager';
-import { ChangeNode } from '../nodes/change';
 import { BaseProvider } from './base';
+import { GitManager } from '../git-manager';
 
 export class GitCommitsProvider extends BaseProvider {
 	private currentHead?: string;
@@ -11,25 +10,21 @@ export class GitCommitsProvider extends BaseProvider {
 	onStateChange(repository: Repository) {
 		const headCommit = this.getHeadCommit(repository);
 
-		if (this.currentHead !== headCommit) {
-			this.currentHead = headCommit;
-			this.refresh();
+		if (this.currentHead === headCommit) {
+			return;
 		}
+
+		this.currentHead = headCommit;
+		super.onStateChange(repository);
 	}
 
 	onRepositoryChange(repository: Repository) {
 		this.currentHead = this.getHeadCommit(repository);
 	}
 
-	async getChildren(commitNode?: CommitNode): Promise<vscode.TreeItem[]> {
-		if (commitNode) {
-			const changes = await commitNode.manager.commitChanges(commitNode.commit);
-			return changes.map((change) => new ChangeNode(change, commitNode.manager));
-		} else {
-			if (!this.manager) { return []; }
-			const commits = await this.manager.fetchCommits(20);
-			return commits.map((commit) => new CommitNode(commit, this.manager as GitManager));
-		}
+	async getTreeItems(manager: GitManager): Promise<vscode.TreeItem[]> {
+		const commits = await manager.fetchCommits(20);
+		return commits.map((commit) => new CommitNode(commit, manager));
 	}
 
 	private getHeadCommit(repository: Repository) {
