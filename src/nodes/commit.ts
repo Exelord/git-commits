@@ -3,8 +3,10 @@ import { Commit, GitManager } from '../git-manager';
 import { Remote } from '../ext/git.d';
 import { createHash } from 'crypto';
 import { selectUnit } from '@formatjs/intl-utils';
+import { ChangeNode } from './change';
+import { BaseNode } from './base';
 
-export class CommitNode extends vscode.TreeItem {
+export class CommitNode extends BaseNode {
 	private avatarCache = new Map();
 
 	constructor(public commit: Commit, public manager: GitManager) {
@@ -30,6 +32,11 @@ export class CommitNode extends vscode.TreeItem {
 	get relativeTime() {
 		const { value, unit } = selectUnit((this.commit.authorDate || new Date()).getTime());
 		return new (Intl as any).RelativeTimeFormat(vscode.env.language, { style: 'long' }).format(value, unit);
+	}
+
+	async getChildren() {
+		const changes = await this.manager.commitChanges(this.commit);
+		return changes.map((change) => new ChangeNode(change, this.manager));
 	}
 
 	private get remoteHost(): string | undefined {

@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import { Remote } from '../ext/git.d';
 import { GitManager } from '../git-manager';
+import { BaseNode } from './base';
 
-export class RemoteNode extends vscode.TreeItem {
+export class RemoteNode extends BaseNode {
 	constructor(public remote: Remote, public manager: GitManager) {
 		super(remote.name);
 		

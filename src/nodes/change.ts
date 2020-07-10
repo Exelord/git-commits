@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
 import { GitManager, Change } from '../git-manager';
 import { Status } from '../ext/git.d';
+import { BaseNode } from './base';
 
 const statuses = {
 	[Status.INDEX_ADDED]: { letter: "💚", name: 'Added' },
@@ -9,7 +9,7 @@ const statuses = {
 	[Status.INDEX_RENAMED]: { letter: "💙", name: 'Renamed' }
 };
 
-export class ChangeNode extends vscode.TreeItem {
+export class ChangeNode extends BaseNode {
 	relPath: string;
 	originalRelPath: string;
 
