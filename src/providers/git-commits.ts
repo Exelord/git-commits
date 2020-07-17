@@ -8,7 +8,7 @@ export class GitCommitsProvider extends BaseProvider {
 	private currentHead?: string;
 
 	get childrenOptions() {
-		return { showMergeChildren: true };
+		return { showMergeChildren: false };
 	}
 
 	onStateChange(repository: Repository) {
