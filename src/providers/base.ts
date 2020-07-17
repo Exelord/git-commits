@@ -14,7 +14,7 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		this.trackRepositories();
 	}
 
-	get childrenOptions() {
+	get childrenOptions(): any {
 		return undefined;
 	}
 
