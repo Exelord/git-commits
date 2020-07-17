@@ -38,7 +38,7 @@ export class CommitNode extends BaseNode {
 
 	async getChildren(options: { showMergeChildren?: boolean } = {}) {
 		if (options.showMergeChildren && this.isMergeCommit) {
-			const commits = await this.manager.fetchCommitsByHash(this.commit.parents);
+			const commits = await this.manager.fetchMergeCommits(this.commit.hash);
 			return commits.map((commit) => new CommitNode(commit, this.manager));
 		}
 		

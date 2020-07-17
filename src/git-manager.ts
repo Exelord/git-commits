@@ -37,8 +37,9 @@ export class GitManager {
     return this._fetchCommits('log', [`-n${maxEntries}`, '--first-parent']);
   }
 
-  async fetchCommitsByHash(hashes: string[]): Promise<Commit[]> {
-    return this._fetchCommits('show', [...hashes, '--first-parent']);
+  async fetchMergeCommits(hash: string): Promise<Commit[]> {
+    const commits = await this._fetchCommits('log', [`${hash}~...${hash}`]);
+    return commits.filter((commit) => commit.hash !== hash);
   }
 
   async fetchRemotes(): Promise<Remote[]> {
