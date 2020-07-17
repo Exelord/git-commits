@@ -15,7 +15,7 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	}
 
 	get childrenOptions() {
-		return {};
+		return undefined;
 	}
 
 	refresh(): void {

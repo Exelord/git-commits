@@ -7,6 +7,10 @@ import { GitManager } from '../git-manager';
 export class GitCommitsProvider extends BaseProvider {
 	private currentHead?: string;
 
+	get childrenOptions() {
+		return { showMergeChildren: true };
+	}
+
 	onStateChange(repository: Repository) {
 		const headCommit = this.getHeadCommit(repository);
 
