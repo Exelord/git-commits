@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Repository, API } from '../ext/git.d';
 import { GitManager } from '../git-manager';
 import { BaseNode } from '../nodes/base';
+import { TextNode } from '../nodes/text';
 
 export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
@@ -9,6 +10,8 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	
 	protected _stateObserver?: vscode.Disposable;
 	protected manager?: GitManager;
+
+	emptyMessage?: string;
 
 	constructor(public gitApi: API) {
 		this.trackRepositories();
@@ -38,7 +41,13 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		const { manager } = this;
 		if (!manager) { return []; }
 
-		return this.getTreeItems(manager);
+		const children = await this.getTreeItems(manager);
+
+		if (children.length < 1 && this.emptyMessage) {
+			return [new TextNode(this.emptyMessage)];
+		}
+
+		return children;
 	}
 
 	protected onRepositoryChange(_repository: Repository) {};

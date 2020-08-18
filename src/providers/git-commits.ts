@@ -3,8 +3,11 @@ import { Repository } from '../ext/git.d';
 import { CommitNode } from '../nodes/commit';
 import { BaseProvider } from './base';
 import { GitManager } from '../git-manager';
+import { TextNode } from '../nodes/text';
 
 export class GitCommitsProvider extends BaseProvider {
+	emptyMessage = 'No commits could be found.';
+
 	private currentHead?: string;
 
 	get childrenOptions() {
