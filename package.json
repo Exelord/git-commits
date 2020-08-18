@@ -43,17 +43,20 @@
         {
           "id": "gitCommits.commits",
           "name": "Commits",
-          "when": "gitOpenRepositoryCount != 0"
+          "when": "gitOpenRepositoryCount != 0",
+          "visibility": "visible"
         },
         {
           "id": "gitCommits.stashes",
           "name": "Stashes",
-          "when": "gitOpenRepositoryCount != 0"
+          "when": "gitOpenRepositoryCount != 0",
+          "visibility": "collapsed"
         },
         {
           "id": "gitCommits.remotes",
           "name": "Remotes",
-          "when": "gitOpenRepositoryCount != 0"
+          "when": "gitOpenRepositoryCount != 0",
+          "visibility": "collapsed"
         }
       ]
     },
