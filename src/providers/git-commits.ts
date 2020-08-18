@@ -3,7 +3,6 @@ import { Repository } from '../ext/git.d';
 import { CommitNode } from '../nodes/commit';
 import { BaseProvider } from './base';
 import { GitManager } from '../git-manager';
-import { TextNode } from '../nodes/text';
 
 export class GitCommitsProvider extends BaseProvider {
 	emptyMessage = 'No commits could be found.';
@@ -30,7 +29,7 @@ export class GitCommitsProvider extends BaseProvider {
 	}
 
 	async getTreeItems(manager: GitManager): Promise<vscode.TreeItem[]> {
-		const commits = await manager.fetchCommits(20);
+		const commits = await manager.fetchCommits(30);
 		return commits.map((commit) => new CommitNode(commit, manager));
 	}
 
