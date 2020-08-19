@@ -1,13 +1,12 @@
 import * as vscode from 'vscode';
 import { Commit, GitManager } from '../git-manager';
 import { Remote } from '../ext/git.d';
-import { createHash } from 'crypto';
 import { selectUnit } from '@formatjs/intl-utils';
 import { ChangeNode } from './change';
 import { BaseNode } from './base';
+import { getAvatarUrl } from '../utils/avatars';
 
 export class CommitNode extends BaseNode {
-	private avatarCache = new Map();
 	private isMergeCommit: boolean;
 
 	constructor(public commit: Commit, public manager: GitManager) {
@@ -27,7 +26,7 @@ export class CommitNode extends BaseNode {
 		].join('\n');
 
 		if (commit.authorEmail) {
-			this.iconPath = this.avatarUrl(commit.authorEmail);
+			this.iconPath = vscode.Uri.parse(getAvatarUrl(commit.authorEmail, this.remoteHost));
 		}
 	}
 
@@ -56,29 +55,5 @@ export class CommitNode extends BaseNode {
 		if (match && match.groups) {
 			return match.groups.host;
 		}
-	}
-
-	private avatarUrl(email: string): vscode.Uri {
-		if (this.avatarCache.has(email)) { return this.avatarCache.get(email); }
-
-		const avatarUri = vscode.Uri.parse(this.remoteHost === 'github' ? this.githubAvatarUrl(email) : this.gravatarUrl(email));
-		this.avatarCache.set(email, avatarUri);
-
-		return avatarUri;
-	}
-
-	private githubAvatarUrl(email: string) {
-		const match = email.match(/^(\d+)\+[^@]+@users.noreply.github.com$/);
-
-		if (match) {
-			return `https://avatars.githubusercontent.com/u/${match[1]}?s=20`;
-		} else {
-			return `https://avatars.githubusercontent.com/u/e?email=${encodeURIComponent(email)}&s=20`;
-		}
-	}
-
-	private gravatarUrl(email: string) {
-		const hash = createHash("md5").update(email).digest("hex");
-		return `https://www.gravatar.com/avatar/${hash}?s=20`;
 	}
 }
