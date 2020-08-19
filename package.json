@@ -99,8 +99,8 @@
       },
       {
         "command": "gitCommits.previewFile",
-        "title": "Preview file",
-        "icon": "$(file-code)",
+        "title": "Preview changed file",
+        "icon": "$(file-symlink-file)",
         "category": "Git Commits"
       },
       {
@@ -111,14 +111,14 @@
       },
       {
         "command": "gitCommits.stash",
-        "title": "Stash",
+        "title": "Stash staged changes",
         "icon": "$(archive)",
         "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashIncludeUntracked",
-        "title": "Stash (include untracked)",
-        "icon": "$(inbox)",
+        "title": "Stash all changes",
+        "icon": "$(package)",
         "category": "Git Commits"
       },
       {
@@ -130,7 +130,7 @@
       {
         "command": "gitCommits.stashApplyLatest",
         "title": "Apply latest",
-        "icon": "$(output)",
+        "icon": "$(tasklist)",
         "category": "Git Commits"
       },
       {
@@ -142,7 +142,7 @@
       {
         "command": "gitCommits.stashApply",
         "title": "Apply",
-        "icon": "$(output)",
+        "icon": "$(tasklist)",
         "category": "Git Commits"
       },
       {
@@ -171,6 +171,80 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "gitCommits.undoCommit",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.copyCommitHash",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.diffChangeWithHead",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.reversedDiffChangeWithHead",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.copyFilePath",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.openCurrentFile",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.previewFile",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.revertChange",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stash",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stashIncludeUntracked",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stashPopLatest",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stashApplyLatest",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stashPop",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stashApply",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.stashDrop",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.addRemote",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.removeRemote",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.pullFromRemote",
+          "when": "false"
+        }
+      ],
       "view/title": [
         {
           "command": "gitCommits.undoCommit",
