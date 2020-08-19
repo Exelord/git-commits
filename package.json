@@ -64,92 +64,110 @@
       {
         "command": "gitCommits.undoCommit",
         "title": "Undo last commit",
-        "icon": "$(discard)"
+        "icon": "$(discard)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.copyCommitHash",
         "title": "Copy commit hash",
-        "icon": "$(files)"
+        "icon": "$(files)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.diffChangeWithHead",
         "title": "Diff with current file",
-        "icon": "$(diff)"
+        "icon": "$(diff)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.reversedDiffChangeWithHead",
         "title": "Diff with current file",
-        "icon": "$(diff)"
+        "icon": "$(diff)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.copyFilePath",
         "title": "Copy file path",
-        "icon": "$(files)"
+        "icon": "$(files)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.openCurrentFile",
         "title": "Open current file",
-        "icon": "$(go-to-file)"
+        "icon": "$(go-to-file)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.previewFile",
         "title": "Preview file",
-        "icon": "$(file-code)"
+        "icon": "$(file-code)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.revertChange",
         "title": "Revert file",
-        "icon": "$(discard)"
+        "icon": "$(discard)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stash",
         "title": "Stash",
-        "icon": "$(archive)"
+        "icon": "$(archive)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashIncludeUntracked",
         "title": "Stash (include untracked)",
-        "icon": "$(inbox)"
+        "icon": "$(inbox)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashPopLatest",
         "title": "Apply and remove latest",
-        "icon": "$(discard)"
+        "icon": "$(discard)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashApplyLatest",
         "title": "Apply latest",
-        "icon": "$(output)"
+        "icon": "$(output)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashPop",
         "title": "Apply and remove",
-        "icon": "$(discard)"
+        "icon": "$(discard)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashApply",
         "title": "Apply",
-        "icon": "$(output)"
+        "icon": "$(output)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.stashDrop",
         "title": "Remove",
-        "icon": "$(trash)"
+        "icon": "$(trash)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.addRemote",
         "title": "Add",
-        "icon": "$(add)"
+        "icon": "$(add)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.removeRemote",
         "title": "Remove",
-        "icon": "$(trash)"
+        "icon": "$(trash)",
+        "category": "Git Commits"
       },
       {
         "command": "gitCommits.pullFromRemote",
         "title": "Pull",
-        "icon": "$(repo-pull)"
+        "icon": "$(repo-pull)",
+        "category": "Git Commits"
       }
     ],
     "menus": {
