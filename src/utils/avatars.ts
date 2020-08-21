@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 
-const cache = new Map();
+const cache = new Map<string, string>();
 
 type Sources = {
   [key: string]: (email: string) => string;
@@ -26,11 +26,13 @@ const sources: Sources = {
 const defaultSource = 'gravatar';
 
 export function getAvatarUrl(email: string, source = defaultSource): string {
-  if (cache.has(email)) { return cache.get(email); }
+  const cacheKey = `${source}:${email}`;
+
+  if (cache.has(cacheKey)) { return cache.get(cacheKey) as string; }
 
   const avatarUrl = (sources[source] || sources[defaultSource])(email);
   
-  cache.set(email, avatarUrl);
+  cache.set(cacheKey, avatarUrl);
 
   return avatarUrl;
 }
