@@ -98,13 +98,14 @@ export class GitManager {
 
   private async _fetchCommits(command: string, customArgs: string[] = []) {
     const args = [
+      command,
       ...customArgs,
       `--format=${COMMIT_FORMAT}`,
       '-z',
       '--'
     ];
 
-    const output = await this.executeGitCommand(`${command} ${args.join(' ')}`).catch((error) => {
+    const output = await this.executeGitCommand(args).catch((error) => {
       if (error.code === 128) { return ''; }
       throw error;
     });
@@ -124,9 +125,11 @@ export class GitManager {
     });
   }
 
-  private async executeGitCommand(command: string): Promise<string> {
+  private async executeGitCommand(args: string[]): Promise<string> {
+    const command = args.join(' ');
+
     return new Promise((resolve, reject) => {
-      childProcess.exec(`git ${command}`, { cwd: this.repository.rootUri.fsPath }, (error, stdout) => {
+      childProcess.exec(`${this.gitApi.git.path} ${command}`, { cwd: this.repository.rootUri.fsPath }, (error, stdout) => {
         if (error) { return reject(error); }
         return resolve(stdout);
       });
