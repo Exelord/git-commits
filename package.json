@@ -2,7 +2,7 @@
   "name": "git-commits",
   "displayName": "Git Commits",
   "description": "Adds list of last commits in source control tab",
-  "version": "3.7.13",
+  "version": "3.7.14",
   "publisher": "Exelord",
   "repository": "https://github.com/Exelord/git-commits",
   "license": "MIT",
