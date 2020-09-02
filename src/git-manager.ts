@@ -1,7 +1,6 @@
 import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange, Remote } from './ext/git.d';
 import * as vscode from "vscode";
 import * as nodePath from 'path';
-import * as childProcess from 'child_process';
 import { parseGitCommits } from './ext/git';
 
 const COMMIT_FORMAT = '%H%n%aN%n%aE%n%at%n%ct%n%P%n%B';
@@ -26,19 +25,31 @@ export interface DiffSide {
   uri: vscode.Uri;
 }
 
+export interface IExecutionResult<T extends string | Buffer> {
+	exitCode: number;
+	stdout: T;
+	stderr: string;
+}
+
+export const enum Operation {
+  GetStashes = 'GetStashes',
+  GetMergeCommits = 'GetMergeCommits',
+  GetCommits = 'GetCommits',
+}
+
 export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
   async fetchStashes(): Promise<Commit[]> {
-    return this._fetchCommits('stash list');
+    return this.run(Operation.GetStashes, () => this.getCommits('stash list'));
   }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
-    return this._fetchCommits('log', [`-n${maxEntries}`, '--first-parent']);
+    return this.run(Operation.GetCommits, () => this.getCommits('log', [`-n${maxEntries}`, '--first-parent']));
   }
 
   async fetchMergeCommits(hash: string): Promise<Commit[]> {
-    const commits = await this._fetchCommits('log', [`${hash}~...${hash}`]);
+    const commits = await this.run(Operation.GetMergeCommits, () => this.getCommits('log', [`${hash}~...${hash}`]));
     return commits.filter((commit) => commit.hash !== hash);
   }
 
@@ -96,23 +107,6 @@ export class GitManager {
     });
   }
 
-  private async _fetchCommits(command: string, customArgs: string[] = []) {
-    const args = [
-      command,
-      ...customArgs,
-      `--format=${COMMIT_FORMAT}`,
-      '-z',
-      '--'
-    ];
-
-    const output = await this.executeGitCommand(args).catch((error) => {
-      if (error.code === 128) { return ''; }
-      throw error;
-    });
-
-    return this.convertToCommits(parseGitCommits(output));
-  }
-
   private convertToCommits(commits: GitCommit[]): Commit[] {
     return commits.map((commit: any, index: number) => {
       commit.index = index;
@@ -125,14 +119,31 @@ export class GitManager {
     });
   }
 
-  private async executeGitCommand(args: string[]): Promise<string> {
-    const command = args.join(' ');
+  private async getCommits(command: string, customArgs: string[] = []): Promise<Commit[]> {
+    const args = [
+      command,
+      ...customArgs,
+      `--format=${COMMIT_FORMAT}`,
+      '-z',
+      '--'
+    ];
 
-    return new Promise((resolve, reject) => {
-      childProcess.exec(`${this.gitApi.git.path} ${command}`, { cwd: this.repository.rootUri.fsPath }, (error, stdout) => {
-        if (error) { return reject(error); }
-        return resolve(stdout);
-      });
-    });
+    const result = await this.executeGitCommand(args);
+
+    if (result.exitCode) { return []; }
+
+    return this.convertToCommits(parseGitCommits(result.stdout));
+  }
+
+  private async run<T>(operation: Operation, runOperation: () => Promise<T> = () => Promise.resolve<any>(null)): Promise<T> {
+    return this.repository._repository.run(operation, runOperation);
+  }
+
+  private async executeGitCommand(args: string[]): Promise<IExecutionResult<string>> {
+    try {
+      return await this.gitApi.git._model.git.exec(this.repository.rootUri.fsPath, args);
+    } catch (error) {
+      return error;
+    }
   }
 }

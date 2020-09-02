@@ -7,6 +7,7 @@ import { Uri, Event, Disposable, ProviderResult } from 'vscode';
 export { ProviderResult } from 'vscode';
 
 export interface Git {
+	readonly _model: any;
 	readonly path: string;
 }
 
