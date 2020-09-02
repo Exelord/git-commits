@@ -35,7 +35,7 @@ export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
   async fetchStashes(): Promise<Commit[]> {
-    return this.getCommits('stash list');
+    return this.getCommits('stash', ['list']);
   }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
