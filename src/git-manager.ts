@@ -31,25 +31,19 @@ export interface IExecutionResult<T extends string | Buffer> {
 	stderr: string;
 }
 
-export const enum Operation {
-  GetStashes = 'GetStashes',
-  GetMergeCommits = 'GetMergeCommits',
-  GetCommits = 'GetCommits',
-}
-
 export class GitManager {
   constructor(readonly gitApi: API, readonly repository: GitRepository) {}
 
   async fetchStashes(): Promise<Commit[]> {
-    return this.run(Operation.GetStashes, () => this.getCommits('stash list'));
+    return this.getCommits('stash list');
   }
 
   async fetchCommits(maxEntries: number): Promise<Commit[]> {
-    return this.run(Operation.GetCommits, () => this.getCommits('log', [`-n${maxEntries}`, '--first-parent']));
+    return this.getCommits('log', [`-n${maxEntries}`, '--first-parent']);
   }
 
   async fetchMergeCommits(hash: string): Promise<Commit[]> {
-    const commits = await this.run(Operation.GetMergeCommits, () => this.getCommits('log', [`${hash}~...${hash}`]));
+    const commits = await this.getCommits('log', [`${hash}~...${hash}`]);
     return commits.filter((commit) => commit.hash !== hash);
   }
 
@@ -133,10 +127,6 @@ export class GitManager {
     if (result.exitCode) { return []; }
 
     return this.convertToCommits(parseGitCommits(result.stdout));
-  }
-
-  private async run<T>(operation: Operation, runOperation: () => Promise<T> = () => Promise.resolve<any>(null)): Promise<T> {
-    return this.repository._repository.run(operation, runOperation);
   }
 
   private async executeGitCommand(args: string[]): Promise<IExecutionResult<string>> {
