@@ -360,21 +360,21 @@
     "vscode.git"
   ],
   "scripts": {
-    "vscode:prepublish": "yarn compile",
-    "compile": "tsc -p ./",
+    "vscode:prepublish": "yarn build",
+    "build": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "release": "release-it"
   },
   "devDependencies": {
-    "@types/mocha": "^8.0.0",
-    "@types/node": "^14.0.23",
-    "@types/vscode": "^1.32.0",
-    "@typescript-eslint/eslint-plugin": "^3.6.1",
-    "@typescript-eslint/parser": "^3.6.1",
-    "eslint": "^7.4.0",
-    "release-it": "^13.6.5",
-    "typescript": "^3.9.7",
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.11.2",
+    "@types/vscode": "^1.49.0",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "eslint": "^7.10.0",
+    "release-it": "^14.0.3",
+    "typescript": "^4.0.3",
     "vscode-test": "^1.4.0"
   },
   "release-it": {
@@ -390,6 +390,6 @@
     }
   },
   "dependencies": {
-    "@formatjs/intl-utils": "^3.8.1"
+    "@formatjs/intl-utils": "^3.8.4"
   }
 }
