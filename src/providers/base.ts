@@ -11,10 +11,16 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	protected _stateObserver?: vscode.Disposable;
 	protected manager?: GitManager;
 
+	private trackedRepositoriesDisposers = new Map<Repository, vscode.Disposable>();
+
 	emptyMessage?: string;
 
 	constructor(public gitApi: API) {
 		this.trackRepositories();
+
+		if (!this.manager && this.gitApi.repositories[0]) {
+			this.selectRepository(this.gitApi.repositories[0]);
+		}
 	}
 
 	get childrenOptions(): any {
@@ -39,10 +45,12 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		}
 		
 		const { manager } = this;
-		if (!manager) { return []; }
+		
+		if (!manager) {
+			return [new TextNode('No active repository could be found.')];
+		}
 
 		const children = await this.getTreeItems(manager);
-
 		if (children.length < 1 && this.emptyMessage) {
 			return [new TextNode(this.emptyMessage)];
 		}
@@ -56,7 +64,7 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 		this.refresh();
 	};
 
-	private onSelectedRepository(repository: Repository) {
+	private selectRepository(repository: Repository) {
 		this.manager = new GitManager(this.gitApi, repository);
 		this.onRepositoryChange(repository);
 		this.observeRepositoryState(repository);
@@ -70,20 +78,34 @@ export class BaseProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	}
 
 	private trackRepositories() {
-		this.gitApi.repositories.forEach((repository) => {
-			if (repository.ui.selected) { this.onSelectedRepository(repository); }
-			
-			repository.ui.onDidChange(() => {
-				if (repository.ui.selected) { this.onSelectedRepository(repository); }
-			});
+		this.gitApi.repositories.forEach((repository) => this.trackRepository(repository));
+		this.gitApi.onDidOpenRepository((repository) => this.trackRepository(repository));
+		this.gitApi.onDidCloseRepository((repository) => this.untrackRepository(repository));
+	}
+
+	private trackRepository(repository: Repository) {
+		if (this.trackedRepositoriesDisposers.has(repository)) { return; }
+
+		const disposer = repository.ui.onDidChange(() => {
+			if (repository.ui.selected) { this.selectRepository(repository); }
 		});
 		
-		this.gitApi.onDidOpenRepository((repository) => {
-			if (repository.ui.selected) { this.onSelectedRepository(repository); }
+		this.trackedRepositoriesDisposers.set(repository, disposer);
+		
+		if (repository.ui.selected) { this.selectRepository(repository); }
+	}
+	
+	private untrackRepository(repository: Repository) {
+		const disposer = this.trackedRepositoriesDisposers.get(repository);
+		
+		if (disposer) {
+			disposer.dispose();
+			this.trackedRepositoriesDisposers.delete(repository);
+		}
 
-			repository.ui.onDidChange(() => {
-				if (repository.ui.selected) { this.onSelectedRepository(repository); }
-			});
-		});
+		if (repository.ui.selected) {
+			const firstRepository = this.gitApi.repositories[0];
+			if (firstRepository) { this.selectRepository(firstRepository); }
+		}
 	}
 }
