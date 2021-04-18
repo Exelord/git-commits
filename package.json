@@ -12,7 +12,7 @@
   },
   "homepage": "https://github.com/Exelord/git-commits#readme",
   "engines": {
-    "vscode": "^1.32.0"
+    "vscode": "^1.52.0"
   },
   "categories": [
     "Other"
