@@ -50,11 +50,11 @@ export class CommitNode extends BaseNode {
 		const remotes = this.manager.repository.state.remotes;
 		const remote = remotes.find((remote: Remote) => remote.name === 'origin') || remotes[0];
 		const remoteUrl = remote ? remote.fetchUrl || '' : '';
-		const regexp = new RegExp(/@(?<host>\S+)\.\w+[:|\/]/);
-		const match = regexp.exec(remoteUrl);
-		
-		if (match && match.groups) {
-			return match.groups.host;
-		}
+		const regexp = new RegExp(/(\/\/|@)(?<host>[a-z][a-z0-9+\-]+)/);
+    const match = regexp.exec(remoteUrl);
+
+    if (match && match.groups && match.groups.host) {
+      return match.groups.host;
+    }
 	}
 }
