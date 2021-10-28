@@ -8,12 +8,14 @@ type Sources = {
 
 const sources: Sources = {
   github(email: string) {
-    const match = email.match(/^(\d+)\+[^@]+@users.noreply.github.com$/);
+    const match = email.match(/^\d+\+([^@]+)@users.noreply.github.com$/);
 
     if (match) {
-      return `https://avatars.githubusercontent.com/u/${match[1]}?s=20`;
+      return `https://github.com/${match[1]}.png`;
     } else {
-      return `https://avatars.githubusercontent.com/u/e?email=${encodeURIComponent(email)}&s=20`;
+      return `https://avatars.githubusercontent.com/u/e?email=${encodeURIComponent(
+        email
+      )}&s=20`;
     }
   },
 

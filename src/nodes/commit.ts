@@ -18,12 +18,13 @@ export class CommitNode extends BaseNode {
 		this.isMergeCommit = this.commit.parents.length > 0;
 
 		this.tooltip = [
-			`${commit.authorName} (${commit.authorEmail}) -- ${commit.shortHash}`,
-			'',
-			commit.authorDate,
-			'',
-			commit.message
-		].join('\n');
+      `${commit.authorName} (${commit.authorEmail}) -- ${commit.shortHash}`,
+      "",
+      this.relativeTime,
+      commit.authorDate,
+      "",
+      commit.message,
+    ].join("\n");
 
 		if (commit.authorEmail) {
 			this.iconPath = vscode.Uri.parse(getAvatarUrl(commit.authorEmail, this.remoteHost));
