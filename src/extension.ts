@@ -55,6 +55,30 @@ export function activate(context: vscode.ExtensionContext) {
     ),
 
     vscode.commands.registerCommand(
+      "gitCommits.commits.viewAsTree",
+      async () => {
+        await vscode.commands.executeCommand(
+          "setContext",
+          "gitCommits.commits.settings.viewAsTree",
+          true
+        );
+        gitCommitsProvider.setView(true);
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "gitCommits.commits.viewAsList",
+      async () => {
+        await vscode.commands.executeCommand(
+          "setContext",
+          "gitCommits.commits.settings.viewAsTree",
+          false
+        );
+        gitCommitsProvider.setView(false);
+      }
+    ),
+
+    vscode.commands.registerCommand(
       "gitCommits.diffChange",
       async (item: ChangeNode) => {
         await item.manager.diffChange(item.change);

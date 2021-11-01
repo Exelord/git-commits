@@ -74,6 +74,18 @@
         "category": "Git Commits"
       },
       {
+        "command": "gitCommits.commits.viewAsTree",
+        "title": "View as tree",
+        "icon": "$(list-tree)",
+        "category": "Git Commits"
+      },
+      {
+        "command": "gitCommits.commits.viewAsList",
+        "title": "View as list",
+        "icon": "$(list-flat)",
+        "category": "Git Commits"
+      },
+      {
         "command": "gitCommits.diffChangeWithHead",
         "title": "Diff with current file",
         "icon": "$(diff)",
@@ -181,6 +193,14 @@
           "when": "false"
         },
         {
+          "command": "gitCommits.commits.viewAsTree",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.commits.viewAsList",
+          "when": "false"
+        },
+        {
           "command": "gitCommits.diffChangeWithHead",
           "when": "false"
         },
@@ -249,7 +269,17 @@
         {
           "command": "gitCommits.undoCommit",
           "when": "view == gitCommits.commits",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "command": "gitCommits.commits.viewAsTree",
+          "when": "view == gitCommits.commits && !gitCommits.commits.settings.viewAsTree",
+          "group": "navigation@2"
+        },
+        {
+          "command": "gitCommits.commits.viewAsList",
+          "when": "view == gitCommits.commits && gitCommits.commits.settings.viewAsTree",
+          "group": "navigation@2"
         },
         {
           "command": "gitCommits.stashPopLatest",

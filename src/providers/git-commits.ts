@@ -9,8 +9,15 @@ export class GitCommitsProvider extends BaseProvider {
 
   private currentHead?: string;
 
+  private viewAsTree = false;
+
   get childrenOptions() {
     return { showMergeChildren: true };
+  }
+
+  setView(v: boolean) {
+    this.viewAsTree = v;
+    this.refresh();
   }
 
   onStateChange(repository: Repository) {
@@ -30,7 +37,9 @@ export class GitCommitsProvider extends BaseProvider {
 
   async getTreeItems(manager: GitManager): Promise<vscode.TreeItem[]> {
     const commits = await manager.fetchCommits(30);
-    return commits.map((commit) => new CommitNode(commit, manager));
+    return commits.map(
+      (commit) => new CommitNode(commit, manager, this.viewAsTree)
+    );
   }
 
   private getHeadCommit(repository: Repository) {
