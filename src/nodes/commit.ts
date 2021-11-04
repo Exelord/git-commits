@@ -7,6 +7,8 @@ import { BaseNode } from "./base";
 import { getAvatarUrl } from "../utils/avatars";
 import { buildTree } from "../utils/build-tree";
 
+let id = 0;
+
 export class CommitNode extends BaseNode {
   private isMergeCommit: boolean;
 
@@ -17,10 +19,10 @@ export class CommitNode extends BaseNode {
   ) {
     super(commit.message, vscode.TreeItemCollapsibleState.Collapsed);
 
-    this.id = commit.hash;
+    this.isMergeCommit = this.commit.parents.length > 0;
+    this.id = `${++id}`;
     this.description = this.relativeTime;
     this.contextValue = "commitNode";
-    this.isMergeCommit = this.commit.parents.length > 0;
 
     this.tooltip = [
       `${commit.authorName} (${commit.authorEmail}) -- ${commit.shortHash}`,
