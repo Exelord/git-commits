@@ -3,7 +3,7 @@ import { BaseNode } from "./base";
 
 export class FolderNode extends BaseNode {
   constructor(name: string, private children: BaseNode[]) {
-    super(name, vscode.TreeItemCollapsibleState.Collapsed);
+    super(name, vscode.TreeItemCollapsibleState.Expanded);
 
     this.contextValue = "folderNode";
     this.resourceUri = vscode.Uri.parse(name);
