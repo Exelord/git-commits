@@ -38,7 +38,8 @@ export class GitCommitsProvider extends BaseProvider {
   async getTreeItems(manager: GitManager): Promise<vscode.TreeItem[]> {
     const commits = await manager.fetchCommits(30);
     return commits.map(
-      (commit) => new CommitNode(commit, manager, this.viewAsTree)
+      (commit) =>
+        new CommitNode(commit, manager, { viewAsTree: this.viewAsTree })
     );
   }
 

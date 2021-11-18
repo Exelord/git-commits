@@ -3,7 +3,11 @@ import { FolderNode } from "../nodes/folder";
 
 export const FILES = Symbol("files");
 
-export function buildTree(nodes: BaseNode[], rootPath: string) {
+export function buildTree(
+  nodes: BaseNode[],
+  rootPath: string,
+  parentId?: string
+) {
   const structure = new Map();
 
   nodes.forEach((node) => {
@@ -31,10 +35,10 @@ export function buildTree(nodes: BaseNode[], rootPath: string) {
     parentFolder.get(FILES).add(node);
   });
 
-  return makeTree(structure);
+  return makeTree(structure, parentId);
 }
 
-function makeTree(map: Map<any, any>) {
+function makeTree(map: Map<any, any>, parentId?: string) {
   const tree: any[] = [];
 
   [...map.keys()].forEach((k) => {
@@ -47,7 +51,11 @@ function makeTree(map: Map<any, any>) {
     if (k === FILES) {
       tree.push(...v);
     } else {
-      tree.push(new FolderNode(k, makeTree(v)));
+      tree.push(
+        new FolderNode(k, makeTree(v, [parentId || "", k].join("->")), {
+          parentId,
+        })
+      );
     }
   });
 

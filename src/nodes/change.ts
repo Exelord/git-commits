@@ -4,6 +4,10 @@ import { BaseNode } from './base';
 import { decorations } from "../decoration";
 import { FileDecoration } from "vscode";
 
+export type ChangeNodeOptions = {
+  parentId?: string;
+};
+
 const statuses = {
   [Status.INDEX_ADDED]: { letter: "💚", name: "Added" },
   [Status.MODIFIED]: { letter: "💛", name: "Modified" },
@@ -15,7 +19,11 @@ export class ChangeNode extends BaseNode {
   relPath: string;
   originalRelPath: string;
 
-  constructor(public change: Change, public manager: GitManager) {
+  constructor(
+    public change: Change,
+    public manager: GitManager,
+    options: ChangeNodeOptions = {}
+  ) {
     super(change.uri.fsPath);
 
     this.relPath = change.uri.fsPath.replace(
@@ -35,7 +43,7 @@ export class ChangeNode extends BaseNode {
       new FileDecoration(status.letter, status.name)
     );
 
-    this.id = change.commit.hash + this.relPath;
+    this.id = [options.parentId || "", this.relPath].join("->");
     this.label = parts.pop();
     this.description = parts.join("/");
     this.resourceUri = change.uri;

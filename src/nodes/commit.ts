@@ -7,7 +7,10 @@ import { BaseNode } from "./base";
 import { getAvatarUrl } from "../utils/avatars";
 import { buildTree } from "../utils/build-tree";
 
-let id = 0;
+export type CommitNodeOptions = {
+  viewAsTree?: boolean;
+  parentId?: string;
+};
 
 export class CommitNode extends BaseNode {
   private isMergeCommit: boolean;
@@ -15,12 +18,12 @@ export class CommitNode extends BaseNode {
   constructor(
     public commit: Commit,
     public manager: GitManager,
-    private viewAsTree = false
+    private options: CommitNodeOptions = {}
   ) {
     super(commit.message, vscode.TreeItemCollapsibleState.Collapsed);
 
+    this.id = [options.parentId || "", commit.hash].join("->");
     this.isMergeCommit = this.commit.parents.length > 0;
-    this.id = `${++id}`;
     this.description = this.relativeTime;
     this.contextValue = "commitNode";
 
@@ -49,21 +52,31 @@ export class CommitNode extends BaseNode {
     }).format(value, unit);
   }
 
-  async getChildren(options: { showMergeChildren?: boolean } = {}) {
+  async getChildren(
+    options: { showMergeChildren?: boolean } = {}
+  ): Promise<vscode.TreeItem[]> {
     if (options.showMergeChildren && this.isMergeCommit) {
       const commits = await this.manager.fetchMergeCommits(this.commit.hash);
       return commits.map(
-        (commit) => new CommitNode(commit, this.manager, this.viewAsTree)
+        (commit) =>
+          new CommitNode(commit, this.manager, {
+            viewAsTree: this.options.viewAsTree,
+            parentId: this.id,
+          })
       );
     }
 
     const changes = await this.manager.fetchCommitChanges(this.commit);
     const changeNodes = changes.map(
-      (change) => new ChangeNode(change, this.manager)
+      (change) => new ChangeNode(change, this.manager, { parentId: this.id })
     );
 
-    if (this.viewAsTree) {
-      return buildTree(changeNodes, this.manager.repository.rootUri.path);
+    if (this.options.viewAsTree) {
+      return buildTree(
+        changeNodes,
+        this.manager.repository.rootUri.path,
+        this.id
+      );
     }
 
     return changeNodes;
