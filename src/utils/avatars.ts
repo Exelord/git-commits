@@ -21,7 +21,7 @@ const sources: Sources = {
 
   gravatar(email: string) {
     const hash = createHash("md5").update(email).digest("hex");
-    return `https://www.gravatar.com/avatar/${hash}?s=20`;
+    return `https://www.gravatar.com/avatar/${hash}?s=20&d=robohash`;
   }
 };
 
