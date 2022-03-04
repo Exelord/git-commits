@@ -24,14 +24,14 @@ export class ChangeNode extends BaseNode {
     public manager: GitManager,
     options: ChangeNodeOptions = {}
   ) {
-    super(change.uri.fsPath);
+    super(change.uri.path);
 
-    this.relPath = change.uri.fsPath.replace(
-      `${change.commit.repository.rootUri.fsPath}/`,
+    this.relPath = change.uri.path.replace(
+      `${change.commit.repository.rootUri.path}/`,
       ""
     );
-    this.originalRelPath = change.originalUri.fsPath.replace(
-      `${change.commit.repository.rootUri.fsPath}/`,
+    this.originalRelPath = change.originalUri.path.replace(
+      `${change.commit.repository.rootUri.path}/`,
       ""
     );
 
