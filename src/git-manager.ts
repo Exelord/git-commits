@@ -104,9 +104,9 @@ export class GitManager {
 
   private async diff(leftSide: DiffSide, rightSide: DiffSide) {
     const options = { preview: true, viewColumn: vscode.ViewColumn.Active };
-    const title = `${nodePath.basename(leftSide.uri.fsPath)} (${
+    const title = `${nodePath.basename(leftSide.uri.path)} (${
       leftSide.label
-    }) ⟷ ${nodePath.basename(rightSide.uri.fsPath)} (${rightSide.label})`;
+    }) ⟷ ${nodePath.basename(rightSide.uri.path)} (${rightSide.label})`;
 
     await vscode.commands.executeCommand(
       "vscode.diff",
@@ -119,8 +119,8 @@ export class GitManager {
 
   private sortChanges(files: Change[]): Change[] {
     return files.sort((a, b) => {
-      const aParts = a.uri.fsPath.split("/");
-      const bParts = b.uri.fsPath.split("/");
+      const aParts = a.uri.path.split("/");
+      const bParts = b.uri.path.split("/");
 
       if (aParts.length < bParts.length) {
         return 1;
