@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { Commit, GitManager } from "../git-manager";
 import { Remote } from "../ext/git.d";
-import { selectUnit } from "@formatjs/intl-utils";
 import { ChangeNode } from "./change";
 import { BaseNode } from "./base";
 import { getAvatarUrl } from "../utils/avatars";
 import { buildTree } from "../utils/build-tree";
+import { selectUnit } from "../utils/date";
 
 export type CommitNodeOptions = {
   viewAsTree?: boolean;
@@ -44,10 +44,8 @@ export class CommitNode extends BaseNode {
   }
 
   get relativeTime() {
-    const { value, unit } = selectUnit(
-      (this.commit.authorDate || new Date()).getTime()
-    );
-    return new (Intl as any).RelativeTimeFormat(vscode.env.language, {
+    const { value, unit } = selectUnit(this.commit.authorDate || new Date());
+    return new Intl.RelativeTimeFormat(vscode.env.language, {
       style: "long",
     }).format(value, unit);
   }
