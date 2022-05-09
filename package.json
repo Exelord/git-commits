@@ -420,6 +420,6 @@
     }
   },
   "dependencies": {
-    "@formatjs/intl-utils": "^3.8.4"
+    "date-fns": "^2.28.0"
   }
 }
