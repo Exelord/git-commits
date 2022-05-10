@@ -1,3 +1,4 @@
+.github/**
 .vscode/**
 .vscode-test/**
 node_modules
@@ -9,3 +10,5 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+CHANGELOG.md
+example.gif
