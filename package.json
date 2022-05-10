@@ -425,7 +425,8 @@
         "npm run lint",
         "npm run build",
         "npm run pack"
-      ]
+      ],
+      "after:release": "npm run publish"
     }
   },
   "dependencies": {
