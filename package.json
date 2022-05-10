@@ -394,6 +394,8 @@
     "build": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
+    "pack": "vsce package",
+    "publish": "vsce publish",
     "release": "release-it"
   },
   "devDependencies": {
@@ -404,7 +406,8 @@
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",
     "release-it": "^15.0.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "vsce": "^2.7.0"
   },
   "release-it": {
     "git": {
@@ -416,6 +419,13 @@
     },
     "github": {
       "release": true
+    },
+    "hooks": {
+      "before:release": [
+        "npm run lint",
+        "npm run build",
+        "npm run pack"
+      ]
     }
   },
   "dependencies": {
