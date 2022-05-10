@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 
 module.exports = defineConfig({
   ssr: {
-    noExternal: ["date-fns"],
+    noExternal: "*",
   },
   build: {
     minify: true,
