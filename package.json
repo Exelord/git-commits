@@ -392,7 +392,7 @@
   "scripts": {
     "vscode:prepublish": "npm run build",
     "build": "vite build",
-    "dev": "vite",
+    "watch": "vite build --watch",
     "lint": "eslint src --ext ts",
     "pack": "vsce package",
     "publish": "vsce publish",
