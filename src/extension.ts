@@ -218,10 +218,9 @@ export function activate(context: vscode.ExtensionContext) {
         if (!result) {
           return false;
         }
-        await item.commit.repository._repository.popStash(item.commit.index);
+        await item.commit.repository.repository.popStash(item.commit.index);
       }
     ),
-
     vscode.commands.registerCommand(
       "gitCommits.stashApply",
       async (item: CommitNode) => {
@@ -233,10 +232,9 @@ export function activate(context: vscode.ExtensionContext) {
         if (!result) {
           return false;
         }
-        await item.commit.repository._repository.applyStash(item.commit.index);
+        await item.commit.repository.repository.applyStash(item.commit.index);
       }
     ),
-
     vscode.commands.registerCommand(
       "gitCommits.stashDrop",
       async (item: CommitNode) => {
@@ -248,14 +246,12 @@ export function activate(context: vscode.ExtensionContext) {
         if (!result) {
           return false;
         }
-        await item.commit.repository._repository.dropStash(item.commit.index);
+        await item.commit.repository.repository.dropStash(item.commit.index);
       }
     ),
-
     vscode.commands.registerCommand("gitCommits.addRemote", async () => {
       await vscode.commands.executeCommand("git.addRemote");
     }),
-
     vscode.commands.registerCommand(
       "gitCommits.removeRemote",
       async (item: RemoteNode) => {
@@ -273,19 +269,17 @@ export function activate(context: vscode.ExtensionContext) {
         await item.manager.repository.removeRemote(remoteName);
       }
     ),
-
     vscode.commands.registerCommand(
       "gitCommits.pullFromRemote",
       async (item: RemoteNode) => {
         const remoteName = item.remote.name;
-        await item.manager.repository._repository.pullFrom(
+        await item.manager.repository.repository.pullFrom(
           false,
           remoteName,
           item.manager.repository.state.HEAD?.name
         );
       }
     ),
-
     vscode.window.registerFileDecorationProvider(new ChangeDecorationProvider())
   );
 }
