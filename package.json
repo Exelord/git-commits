@@ -36,7 +36,7 @@
     "onView:gitCommits.stashes",
     "onView:gitCommits.remotes"
   ],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "views": {
       "scm": [
@@ -391,9 +391,8 @@
   ],
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "tsup",
-    "watch": "npm run build -- --watch",
-    "launch": "npm run build -- --minify=false --sourcemap",
+    "build": "vite build",
+    "watch": "vite build --watch",
     "lint": "eslint src --ext ts",
     "pack": "vsce package",
     "publish": "vsce publish",
@@ -407,8 +406,8 @@
     "@typescript-eslint/parser": "^5.37.0",
     "eslint": "^8.23.1",
     "release-it": "^15.4.2",
-    "tsup": "^6.2.3",
     "typescript": "^4.8.3",
+    "vite": "^3.1.1",
     "vsce": "^2.11.0"
   },
   "release-it": {
