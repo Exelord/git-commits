@@ -135,6 +135,7 @@ export class GitManager {
 
   private convertToCommits(commits: GitCommit[]): Commit[] {
     return commits.map((commit: any, index: number) => {
+      commit.message = commit.message.split('\n')[0].trim();
       commit.index = index;
       commit.parentHash = commit.parents.shift() || commit.hash;
       commit.shortHash = commit.hash.substr(0, 7);
