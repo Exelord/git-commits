@@ -1,9 +1,12 @@
-import path from "path";
 import { defineConfig } from "vite";
 
-module.exports = defineConfig({
+export default defineConfig({
   ssr: {
     noExternal: "*",
+    external: ["vscode"]
+  },
+  esbuild: {
+    legalComments: "none",
   },
   build: {
     minify: true,
@@ -11,13 +14,10 @@ module.exports = defineConfig({
     target: "esnext",
     outDir: "out",
     lib: {
-      entry: path.resolve(__dirname, "src/extension.ts"),
+      entry: "./src/extension.ts",
       formats: ["cjs"],
-      name: "git-commits",
-      fileName: "main.js",
     },
     rollupOptions: {
-      input: path.resolve(__dirname, "src/extension.ts"),
       external: ["vscode"],
     },
   },
