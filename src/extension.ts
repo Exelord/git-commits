@@ -172,6 +172,23 @@ export function activate(context: vscode.ExtensionContext) {
       }
     ),
 
+    vscode.commands.registerCommand(
+      "gitCommits.revertCommit",
+      async (item: CommitNode) => {
+        const result = await vscode.window.showInformationMessage(
+          "Are you sure you want to revert this commit?",
+          { modal: true },
+          { title: "Revert commit" }
+        );
+        if (!result) {
+          return false;
+        }
+
+        await item.manager.revertCommit(item.commit);
+        await vscode.commands.executeCommand("git.undoCommit", item);
+      }
+    ),
+
     vscode.commands.registerCommand("gitCommits.stash", async () => {
       await vscode.commands.executeCommand("git.stash");
     }),

@@ -80,6 +80,10 @@ export class GitManager {
     return this.sortChanges(changes);
   }
 
+  async revertCommit(commit: Commit): Promise<void> {
+    await this.executeGitCommand(["revert", commit.hash]);
+  }
+
   async diffChange(change: Change): Promise<void> {
     const leftSide = {
       uri: change.originalUri,
@@ -135,7 +139,7 @@ export class GitManager {
 
   private convertToCommits(commits: GitCommit[]): Commit[] {
     return commits.map((commit: any, index: number) => {
-      commit.message = commit.message.split('\n')[0].trim();
+      commit.message = commit.message.split("\n")[0].trim();
       commit.index = index;
       commit.parentHash = commit.parents.shift() || commit.hash;
       commit.shortHash = commit.hash.substr(0, 7);
@@ -170,13 +174,9 @@ export class GitManager {
   private async executeGitCommand(
     args: string[]
   ): Promise<IExecutionResult<string> | any> {
-    try {
-      return await this.gitApi.git._model.git.exec(
-        this.repository.rootUri.fsPath,
-        args
-      );
-    } catch (error) {
-      return error;
-    }
+    return this.gitApi.git._model.git.exec(
+      this.repository.rootUri.fsPath,
+      args
+    );
   }
 }
