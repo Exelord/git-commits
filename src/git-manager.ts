@@ -1,7 +1,11 @@
 import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange, Remote } from './ext/git.d';
 import * as vscode from "vscode";
 import * as nodePath from 'path';
+import { promisify } from 'node:util';
+import { exec } from 'node:child_process';
 import { parseGitCommits } from './ext/git';
+
+const asyncExec = promisify(exec);
 
 const COMMIT_FORMAT = '%H%n%aN%n%aE%n%at%n%ct%n%P%n%B';
 
@@ -162,21 +166,18 @@ export class GitManager {
       "--",
     ];
 
-    const result = await this.executeGitCommand(args);
-
-    if (result.exitCode) {
+    let result;
+    
+    try {
+      result = await this.executeGitCommand(args);
+    } catch(error) {
       return [];
     }
 
     return this.convertToCommits(parseGitCommits(result.stdout));
   }
 
-  private async executeGitCommand(
-    args: string[]
-  ): Promise<IExecutionResult<string> | any> {
-    return (this.gitApi as any).a.git.exec(
-      this.repository.rootUri.fsPath,
-      args
-    );
+  private async executeGitCommand(args: string[]): Promise<IExecutionResult<string> | any> {
+    return asyncExec(`${this.gitApi.git.path} ${args.join(' ')}`, { cwd: this.repository.rootUri.fsPath,  })
   }
 }
