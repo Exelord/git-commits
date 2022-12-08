@@ -174,7 +174,7 @@ export class GitManager {
   private async executeGitCommand(
     args: string[]
   ): Promise<IExecutionResult<string> | any> {
-    return this.gitApi.git._model.git.exec(
+    return (this.gitApi as any).a.git.exec(
       this.repository.rootUri.fsPath,
       args
     );
