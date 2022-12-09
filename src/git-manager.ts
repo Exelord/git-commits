@@ -2,10 +2,10 @@ import { Repository as GitRepository, Commit as GitCommit, API, Change as GitCha
 import * as vscode from "vscode";
 import * as nodePath from 'path';
 import { promisify } from 'node:util';
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { parseGitCommits } from './ext/git';
 
-const asyncExec = promisify(exec);
+const asyncExecFile = promisify(execFile);
 
 const COMMIT_FORMAT = '%H%n%aN%n%aE%n%at%n%ct%n%P%n%B';
 
@@ -178,6 +178,6 @@ export class GitManager {
   }
 
   private async executeGitCommand(args: string[]): Promise<IExecutionResult<string> | any> {
-    return asyncExec(`${this.gitApi.git.path} ${args.join(' ')}`, { cwd: this.repository.rootUri.fsPath,  })
+    return asyncExecFile(this.gitApi.git.path, args, { cwd: this.repository.rootUri.fsPath,  })
   }
 }
