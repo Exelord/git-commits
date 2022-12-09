@@ -178,6 +178,6 @@ export class GitManager {
   }
 
   private async executeGitCommand(args: string[]): Promise<IExecutionResult<string> | any> {
-    return asyncExecFile(this.gitApi.git.path, args, { cwd: this.repository.rootUri.fsPath,  })
+    return asyncExecFile(this.gitApi.git.path, args, { cwd: this.repository.rootUri.fsPath, });
   }
 }
