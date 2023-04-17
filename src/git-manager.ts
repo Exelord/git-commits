@@ -68,6 +68,16 @@ export class GitManager {
     return this.getWorktrees();
   }
 
+  async lockWorktree(worktree: Worktree): Promise<void> {
+    await this.executeGitCommand(["worktree", "lock", worktree.uri.path]);
+    worktree.isLocked = true;
+  }
+
+  async unlockWorktree(worktree: Worktree): Promise<void> {
+    await this.executeGitCommand(["worktree", "unlock", worktree.uri.path]);
+    worktree.isLocked = false;
+  }
+
   async fetchCommitChanges(commit: Commit): Promise<Change[]> {
     const gitChanges = await this.repository.diffBetween(
       commit.parentHash,

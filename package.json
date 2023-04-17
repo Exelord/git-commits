@@ -192,6 +192,18 @@
         "title": "Pull",
         "icon": "$(repo-pull)",
         "category": "Git Commits"
+      },
+      {
+        "command": "gitCommits.lockWorktree",
+        "title": "Lock",
+        "icon": "$(lock)",
+        "category": "Git Commits"
+      },
+      {
+        "command": "gitCommits.unlockWorktree",
+        "title": "Unlock",
+        "icon": "$(unlock)",
+        "category": "Git Commits"
       }
     ],
     "menus": {
@@ -278,6 +290,14 @@
         },
         {
           "command": "gitCommits.pullFromRemote",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.lockWorktree",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.unlockWorktree",
           "when": "false"
         }
       ],
@@ -403,6 +423,16 @@
           "command": "gitCommits.pullFromRemote",
           "when": "view == gitCommits.remotes",
           "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.lockWorktree",
+          "when": "view == gitCommits.worktrees && viewItem == worktreeNodeUnlocked",
+          "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.unlockWorktree",
+          "when": "view == gitCommits.worktrees && viewItem == worktreeNodeLocked",
+          "group": "inline@2"
         }
       ]
     }

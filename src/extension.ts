@@ -316,6 +316,18 @@ export function activate(context: vscode.ExtensionContext) {
         );
       }
     ),
+    vscode.commands.registerCommand(
+      "gitCommits.lockWorktree",
+      async (item: WorktreeNode) => {
+        await item.lock();
+      }
+    ),
+    vscode.commands.registerCommand(
+      "gitCommits.unlockWorktree",
+      async (item: WorktreeNode) => {
+        await item.unlock();
+      }
+    ),
     vscode.window.registerFileDecorationProvider(changeDecorator),
     vscode.window.registerFileDecorationProvider(worktreeDecorator)
   );
