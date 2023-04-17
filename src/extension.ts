@@ -344,6 +344,21 @@ export function activate(context: vscode.ExtensionContext) {
         gitWorktreesProvider.refresh();
       }
     ),
+    vscode.commands.registerCommand(
+      "gitCommits.removeWorktree",
+      async (item: WorktreeNode) => {
+        const result = await vscode.window.showInformationMessage(
+          `Are you sure you want to remove "${item.label}" worktree?`,
+          { modal: true },
+          { title: "Remove" }
+        );
+        if (!result) {
+          return false;
+        }
+        await item.remove();
+        gitWorktreesProvider.refresh();
+      }
+    ),
     vscode.window.registerFileDecorationProvider(changeDecorator),
     vscode.window.registerFileDecorationProvider(worktreeDecorator)
   );

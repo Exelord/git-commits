@@ -83,6 +83,10 @@ export class GitManager {
     worktree.uri = vscode.Uri.file(path);
   }
 
+  async removeWorktree(worktree: Worktree): Promise<void> {
+    await this.executeGitCommand(["worktree", "remove", worktree.uri.path]);
+  }
+
   async fetchCommitChanges(commit: Commit): Promise<Change[]> {
     const gitChanges = await this.repository.diffBetween(
       commit.parentHash,

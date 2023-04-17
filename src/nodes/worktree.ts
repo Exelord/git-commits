@@ -52,4 +52,8 @@ export class WorktreeNode extends BaseNode {
   async move(path: string) {
     await this.manager.moveWorktree(this.worktree, path);
   }
+
+  async remove() {
+    await this.manager.removeWorktree(this.worktree);
+  }
 }

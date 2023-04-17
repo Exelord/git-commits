@@ -210,6 +210,12 @@
         "title": "Move",
         "icon": "$(move)",
         "category": "Git Commits"
+      },
+      {
+        "command": "gitCommits.removeWorktree",
+        "title": "Remove",
+        "icon": "$(trash)",
+        "category": "Git Commits"
       }
     ],
     "menus": {
@@ -308,6 +314,10 @@
         },
         {
           "command": "gitCommits.moveWorktree",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.removeWorktree",
           "when": "false"
         }
       ],
@@ -435,19 +445,24 @@
           "group": "inline@1"
         },
         {
-          "command": "gitCommits.lockWorktree",
+          "command": "gitCommits.moveWorktree",
           "when": "view == gitCommits.worktrees && viewItem == worktreeNodeUnlocked",
           "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.lockWorktree",
+          "when": "view == gitCommits.worktrees && viewItem == worktreeNodeUnlocked",
+          "group": "inline@2"
         },
         {
           "command": "gitCommits.unlockWorktree",
           "when": "view == gitCommits.worktrees && viewItem == worktreeNodeLocked",
-          "group": "inline@1"
+          "group": "inline@2"
         },
         {
-          "command": "gitCommits.moveWorktree",
+          "command": "gitCommits.removeWorktree",
           "when": "view == gitCommits.worktrees && viewItem == worktreeNodeUnlocked",
-          "group": "inline@2"
+          "group": "inline@3"
         }
       ]
     }
