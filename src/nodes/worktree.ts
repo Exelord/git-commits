@@ -9,9 +9,9 @@ export class WorktreeNode extends BaseNode {
 
   constructor(public worktree: Worktree, public manager: GitManager) {
     super(worktree.uri.path.split("/").pop() as string);
-    
+
     this.description = `${worktree.branch} (${worktree.shortHash})`;
-    
+
     this.contextValue = this.worktree.isOrigin
       ? "worktreeNodeOrigin"
       : this.worktree.isLocked
@@ -35,10 +35,6 @@ export class WorktreeNode extends BaseNode {
       arguments: [this],
     };
 
-    this.setDecoration();
-  }
-
-  private setDecoration() {
     worktreeDecorator.set(
       this.worktree.uri,
       new FileDecoration(this.worktree.isLocked ? "🔒" : "")
@@ -51,5 +47,9 @@ export class WorktreeNode extends BaseNode {
 
   async unlock() {
     await this.manager.unlockWorktree(this.worktree);
+  }
+
+  async move(path: string) {
+    await this.manager.moveWorktree(this.worktree, path);
   }
 }

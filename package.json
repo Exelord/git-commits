@@ -204,6 +204,12 @@
         "title": "Unlock",
         "icon": "$(unlock)",
         "category": "Git Commits"
+      },
+      {
+        "command": "gitCommits.moveWorktree",
+        "title": "Move",
+        "icon": "$(move)",
+        "category": "Git Commits"
       }
     ],
     "menus": {
@@ -298,6 +304,10 @@
         },
         {
           "command": "gitCommits.unlockWorktree",
+          "when": "false"
+        },
+        {
+          "command": "gitCommits.moveWorktree",
           "when": "false"
         }
       ],
@@ -432,6 +442,11 @@
         {
           "command": "gitCommits.unlockWorktree",
           "when": "view == gitCommits.worktrees && viewItem == worktreeNodeLocked",
+          "group": "inline@1"
+        },
+        {
+          "command": "gitCommits.moveWorktree",
+          "when": "view == gitCommits.worktrees && viewItem == worktreeNodeUnlocked",
           "group": "inline@2"
         }
       ]

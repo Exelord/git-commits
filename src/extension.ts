@@ -317,15 +317,31 @@ export function activate(context: vscode.ExtensionContext) {
       }
     ),
     vscode.commands.registerCommand(
+      "gitCommits.moveWorktree",
+      async (item: WorktreeNode) => {
+        const result = await vscode.window.showInputBox({
+          prompt: "Enter new path for worktree",
+          value: item.worktree.uri.fsPath,
+        });
+        if (!result) {
+          return false;
+        }
+        await item.move(result);
+        gitWorktreesProvider.refresh();
+      }
+    ),
+    vscode.commands.registerCommand(
       "gitCommits.lockWorktree",
       async (item: WorktreeNode) => {
         await item.lock();
+        gitWorktreesProvider.refresh();
       }
     ),
     vscode.commands.registerCommand(
       "gitCommits.unlockWorktree",
       async (item: WorktreeNode) => {
         await item.unlock();
+        gitWorktreesProvider.refresh();
       }
     ),
     vscode.window.registerFileDecorationProvider(changeDecorator),

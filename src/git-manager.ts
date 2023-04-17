@@ -78,6 +78,11 @@ export class GitManager {
     worktree.isLocked = false;
   }
 
+  async moveWorktree(worktree: Worktree, path: string): Promise<void> {
+    await this.executeGitCommand(["worktree", "move", worktree.uri.path, path]);
+    worktree.uri = vscode.Uri.file(path);
+  }
+
   async fetchCommitChanges(commit: Commit): Promise<Change[]> {
     const gitChanges = await this.repository.diffBetween(
       commit.parentHash,
