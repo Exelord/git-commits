@@ -9,7 +9,9 @@ import { GitExtension, Status } from './ext/git.d';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { RemoteNode } from './nodes/remote';
-import { ChangeDecorationProvider } from "./decoration";
+import { changeDecorator, worktreeDecorator } from "./decoration";
+import { GitWorktreesProvider } from "./providers/git-worktrees";
+import { WorktreeNode } from "./nodes/worktree";
 
 export function activate(context: vscode.ExtensionContext) {
   const gitExtension =
@@ -23,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
   const gitCommitsProvider = new GitCommitsProvider(gitApi);
   const gitStashesProvider = new GitStashesProvider(gitApi);
   const gitRemotesProvider = new GitRemotesProvider(gitApi);
+  const gitWorktreesProvider = new GitWorktreesProvider(gitApi);
 
   context.subscriptions.push(
     vscode.window.createTreeView("gitCommits.commits", {
@@ -37,6 +40,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.createTreeView("gitCommits.remotes", {
       treeDataProvider: gitRemotesProvider,
+      showCollapseAll: false,
+    }),
+
+    vscode.window.createTreeView("gitCommits.worktrees", {
+      treeDataProvider: gitWorktreesProvider,
       showCollapseAll: false,
     }),
 
@@ -82,6 +90,17 @@ export function activate(context: vscode.ExtensionContext) {
       "gitCommits.diffChange",
       async (item: ChangeNode) => {
         await item.manager.diffChange(item.change);
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "gitCommits.openWorktree",
+      async (item: WorktreeNode) => {
+        return vscode.commands.executeCommand(
+          "vscode.openFolder",
+          item.worktree.uri,
+          true
+        );
       }
     ),
 
@@ -297,7 +316,8 @@ export function activate(context: vscode.ExtensionContext) {
         );
       }
     ),
-    vscode.window.registerFileDecorationProvider(new ChangeDecorationProvider())
+    vscode.window.registerFileDecorationProvider(changeDecorator),
+    vscode.window.registerFileDecorationProvider(worktreeDecorator)
   );
 }
 

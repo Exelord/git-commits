@@ -1,7 +1,7 @@
 import { GitManager, Change } from '../git-manager';
 import { Status } from '../ext/git.d';
 import { BaseNode } from './base';
-import { decorations } from "../decoration";
+import { changeDecorator } from "../decoration";
 import { FileDecoration } from "vscode";
 
 export type ChangeNodeOptions = {
@@ -38,8 +38,8 @@ export class ChangeNode extends BaseNode {
     const status = statuses[change.status];
     const parts = this.relPath.split("/");
 
-    decorations.set(
-      change.uri.toString(),
+    changeDecorator.set(
+      change.uri,
       new FileDecoration(status.letter, status.name)
     );
 

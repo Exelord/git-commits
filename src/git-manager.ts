@@ -17,6 +17,15 @@ export interface Commit extends GitCommit {
   repository: GitRepository;
 }
 
+export interface Worktree {
+  uri: vscode.Uri;
+  hash: string;
+  shortHash: string;
+  branch: string;
+  isOrigin: boolean;
+  isLocked: boolean;
+}
+
 export interface Change extends GitChange {
   commit: Commit;
   uri: vscode.Uri;
@@ -30,9 +39,9 @@ export interface DiffSide {
 }
 
 export interface IExecutionResult<T extends string | Buffer> {
-	exitCode: number;
-	stdout: T;
-	stderr: string;
+  exitCode: number;
+  stdout: T;
+  stderr: string;
 }
 
 export class GitManager {
@@ -53,6 +62,10 @@ export class GitManager {
 
   async fetchRemotes(): Promise<Remote[]> {
     return this.repository.state.remotes;
+  }
+
+  async fetchWorktrees(): Promise<Worktree[]> {
+    return this.getWorktrees();
   }
 
   async fetchCommitChanges(commit: Commit): Promise<Change[]> {
@@ -154,6 +167,38 @@ export class GitManager {
     });
   }
 
+  private async getWorktrees(): Promise<Worktree[]> {
+    const args = ["worktree", "list", "--porcelain"];
+
+    let result;
+
+    try {
+      result = await this.executeGitCommand(args);
+    } catch (error) {
+      return [];
+    }
+
+    return (result.stdout as string)
+      .split("\n\n")
+      .filter(Boolean)
+      .flatMap((item, index) => {
+        const raw = item.split("\n").reduce<any>((p, c) => {
+          const [k, v] = c.split(" ");
+          p[k] = v || true;
+          return p;
+        }, {});
+
+        return {
+          isLocked: raw.locked || false,
+          isOrigin: index === 0,
+          uri: vscode.Uri.file(raw.worktree),
+          branch: raw.branch.split("/").pop(),
+          hash: raw.HEAD,
+          shortHash: raw.HEAD.slice(0, 7),
+        };
+      });
+  }
+
   private async getCommits(
     command: string,
     customArgs: string[] = []
@@ -167,17 +212,21 @@ export class GitManager {
     ];
 
     let result;
-    
+
     try {
       result = await this.executeGitCommand(args);
-    } catch(error) {
+    } catch (error) {
       return [];
     }
 
     return this.convertToCommits(parseGitCommits(result.stdout));
   }
 
-  private async executeGitCommand(args: string[]): Promise<IExecutionResult<string> | any> {
-    return asyncExecFile(this.gitApi.git.path, args, { cwd: this.repository.rootUri.fsPath, });
+  private async executeGitCommand(
+    args: string[]
+  ): Promise<IExecutionResult<string> | any> {
+    return asyncExecFile(this.gitApi.git.path, args, {
+      cwd: this.repository.rootUri.fsPath,
+    });
   }
 }
