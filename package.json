@@ -53,14 +53,14 @@
           "visibility": "collapsed"
         },
         {
-          "id": "gitCommits.remotes",
-          "name": "Remotes",
+          "id": "gitCommits.worktrees",
+          "name": "Worktrees",
           "when": "gitOpenRepositoryCount != 0",
           "visibility": "collapsed"
         },
         {
-          "id": "gitCommits.worktrees",
-          "name": "Worktrees",
+          "id": "gitCommits.remotes",
+          "name": "Remotes",
           "when": "gitOpenRepositoryCount != 0",
           "visibility": "collapsed"
         }
