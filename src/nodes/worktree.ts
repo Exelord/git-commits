@@ -28,7 +28,9 @@ export class WorktreeNode extends BaseNode {
       .filter(Boolean)
       .join("\n");
 
-    this.iconPath = new vscode.ThemeIcon("file-submodule");
+    this.iconPath = new vscode.ThemeIcon(
+      worktree.isOrigin ? "repo" : "repo-clone"
+    );
     this.resourceUri = worktree.uri;
 
     this.command = {

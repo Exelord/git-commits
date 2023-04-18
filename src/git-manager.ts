@@ -93,7 +93,7 @@ export class GitManager {
   }
 
   async addWorktree(path: string): Promise<void> {
-    await this.executeGitCommand(["worktree", "add", path]);
+    await this.executeGitCommand(["worktree", "add", path, "HEAD"]);
   }
 
   async fetchCommitChanges(commit: Commit): Promise<Change[]> {
