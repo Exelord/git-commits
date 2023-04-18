@@ -220,7 +220,7 @@ export class GitManager {
           isLocked: raw.locked || false,
           isOrigin: index === 0,
           uri: vscode.Uri.file(raw.worktree),
-          branch: raw.branch.split("/").pop(),
+          branch: raw.branch?.split("/").pop() || "",
           hash: raw.HEAD,
           shortHash: raw.HEAD.slice(0, 7),
         };

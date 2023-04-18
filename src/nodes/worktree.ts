@@ -10,7 +10,9 @@ export class WorktreeNode extends BaseNode {
   constructor(public worktree: Worktree, public manager: GitManager) {
     super(worktree.uri.path.split("/").pop() as string);
 
-    this.description = `${worktree.branch} (${worktree.shortHash})`;
+    this.description = [worktree.branch, `(${worktree.shortHash})`]
+      .filter(Boolean)
+      .join(" ");
 
     this.contextValue = this.worktree.isOrigin
       ? "worktreeNodeOrigin"
