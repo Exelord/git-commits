@@ -94,17 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
     ),
 
     vscode.commands.registerCommand(
-      "gitCommits.openWorktree",
-      async (item: WorktreeNode) => {
-        return vscode.commands.executeCommand(
-          "vscode.openFolder",
-          item.worktree.uri,
-          true
-        );
-      }
-    ),
-
-    vscode.commands.registerCommand(
       "gitCommits.diffChangeWithHead",
       async (item: ChangeNode) => {
         await item.manager.diffChangeWithHead(item.change);
@@ -344,6 +333,30 @@ export function activate(context: vscode.ExtensionContext) {
         gitWorktreesProvider.refresh();
       }
     ),
+
+    vscode.commands.registerCommand(
+      "gitCommits.openWorktree",
+      async (item: WorktreeNode) => {
+        return vscode.commands.executeCommand(
+          "vscode.openFolder",
+          item.worktree.uri,
+          true
+        );
+      }
+    ),
+
+    vscode.commands.registerCommand("gitCommits.addWorktree", async () => {
+      const result = await vscode.window.showInputBox({
+        prompt: "Enter path for new worktree",
+        value: gitWorktreesProvider.manager?.repository.rootUri.fsPath,
+      });
+      if (!result) {
+        return false;
+      }
+      await gitWorktreesProvider.manager?.addWorktree(result);
+      gitWorktreesProvider.refresh();
+    }),
+
     vscode.commands.registerCommand(
       "gitCommits.removeWorktree",
       async (item: WorktreeNode) => {

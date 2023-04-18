@@ -216,6 +216,12 @@
         "title": "Remove",
         "icon": "$(trash)",
         "category": "Git Commits"
+      },
+      {
+        "command": "gitCommits.addWorktree",
+        "title": "Add",
+        "icon": "$(add)",
+        "category": "Git Commits"
       }
     ],
     "menus": {
@@ -319,6 +325,10 @@
         {
           "command": "gitCommits.removeWorktree",
           "when": "false"
+        },
+        {
+          "command": "gitCommits.addWorktree",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -360,6 +370,11 @@
         {
           "command": "gitCommits.addRemote",
           "when": "view == gitCommits.remotes",
+          "group": "navigation"
+        },
+        {
+          "command": "gitCommits.addWorktree",
+          "when": "view == gitCommits.worktrees",
           "group": "navigation"
         }
       ],

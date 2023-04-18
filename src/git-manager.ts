@@ -69,22 +69,31 @@ export class GitManager {
   }
 
   async lockWorktree(worktree: Worktree): Promise<void> {
-    await this.executeGitCommand(["worktree", "lock", worktree.uri.path]);
+    await this.executeGitCommand(["worktree", "lock", worktree.uri.fsPath]);
     worktree.isLocked = true;
   }
 
   async unlockWorktree(worktree: Worktree): Promise<void> {
-    await this.executeGitCommand(["worktree", "unlock", worktree.uri.path]);
+    await this.executeGitCommand(["worktree", "unlock", worktree.uri.fsPath]);
     worktree.isLocked = false;
   }
 
   async moveWorktree(worktree: Worktree, path: string): Promise<void> {
-    await this.executeGitCommand(["worktree", "move", worktree.uri.path, path]);
+    await this.executeGitCommand([
+      "worktree",
+      "move",
+      worktree.uri.fsPath,
+      path,
+    ]);
     worktree.uri = vscode.Uri.file(path);
   }
 
   async removeWorktree(worktree: Worktree): Promise<void> {
-    await this.executeGitCommand(["worktree", "remove", worktree.uri.path]);
+    await this.executeGitCommand(["worktree", "remove", worktree.uri.fsPath]);
+  }
+
+  async addWorktree(path: string): Promise<void> {
+    await this.executeGitCommand(["worktree", "add", path]);
   }
 
   async fetchCommitChanges(commit: Commit): Promise<Change[]> {
