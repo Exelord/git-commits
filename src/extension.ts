@@ -1,14 +1,14 @@
-import { ChangeNode } from './nodes/change';
-import { CommitNode } from './nodes/commit';
-import * as vscode from 'vscode';
-import { GitCommitsProvider } from './providers/git-commits';
-import { GitStashesProvider } from './providers/git-stashes';
-import { GitRemotesProvider } from './providers/git-remotes';
-import { GitExtension, Status } from './ext/git.d';
+import { ChangeNode } from "./nodes/change";
+import { CommitNode } from "./nodes/commit";
+import * as vscode from "vscode";
+import { GitCommitsProvider } from "./providers/git-commits";
+import { GitStashesProvider } from "./providers/git-stashes";
+import { GitRemotesProvider } from "./providers/git-remotes";
+import { GitExtension, Status } from "./ext/git.d";
 
-import * as childProcess from 'child_process';
-import * as fs from 'fs';
-import { RemoteNode } from './nodes/remote';
+import * as childProcess from "child_process";
+import * as fs from "fs";
+import { RemoteNode } from "./nodes/remote";
 import { changeDecorator, worktreeDecorator } from "./decoration";
 import { GitWorktreesProvider } from "./providers/git-worktrees";
 import { WorktreeNode } from "./nodes/worktree";
@@ -243,7 +243,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!result) {
           return false;
         }
-        await item.commit.repository.repository.popStash(item.commit.index);
+        await item.commit.repository.popStash(item.commit.index);
       }
     ),
     vscode.commands.registerCommand(
@@ -257,7 +257,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!result) {
           return false;
         }
-        await item.commit.repository.repository.applyStash(item.commit.index);
+        await item.commit.repository.applyStash(item.commit.index);
       }
     ),
     vscode.commands.registerCommand(
@@ -271,7 +271,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!result) {
           return false;
         }
-        await item.commit.repository.repository.dropStash(item.commit.index);
+        await item.commit.repository.dropStash(item.commit.index);
       }
     ),
     vscode.commands.registerCommand("gitCommits.addRemote", async () => {
@@ -298,7 +298,7 @@ export function activate(context: vscode.ExtensionContext) {
       "gitCommits.pullFromRemote",
       async (item: RemoteNode) => {
         const remoteName = item.remote.name;
-        await item.manager.repository.repository.pullFrom(
+        await item.manager.repository.pullFrom(
           false,
           remoteName,
           item.manager.repository.state.HEAD?.name
