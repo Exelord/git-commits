@@ -491,8 +491,8 @@
     "launch": "vite build --minify=false",
     "watch": "vite build --watch",
     "lint": "eslint src --ext ts",
-    "pack": "vsce package",
-    "publish": "vsce publish",
+    "pack": "npm exec vsce package",
+    "publish": "npm exec vsce publish",
     "release": "release-it"
   },
   "devDependencies": {
