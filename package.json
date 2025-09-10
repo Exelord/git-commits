@@ -134,7 +134,7 @@
         "category": "Git Commits"
       },
       {
-        "command": "gitCommits.stash",
+        "command": "gitCommits.stashStaged",
         "title": "Stash staged changes",
         "icon": "$(archive)",
         "category": "Git Commits"
@@ -271,7 +271,7 @@
           "when": "false"
         },
         {
-          "command": "gitCommits.stash",
+          "command": "gitCommits.stashStaged",
           "when": "false"
         },
         {
@@ -358,7 +358,7 @@
           "group": "navigation@3"
         },
         {
-          "command": "gitCommits.stash",
+          "command": "gitCommits.stashStaged",
           "when": "view == gitCommits.stashes",
           "group": "navigation@1"
         },
