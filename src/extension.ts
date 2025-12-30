@@ -134,7 +134,10 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "gitCommits.previewFile",
       async (item: ChangeNode) => {
-        await vscode.commands.executeCommand("vscode.open", item.change.uri, {
+        // For newly added files, use the commit version (item.change.uri)
+        // For other files, also use the commit version for consistency
+        const uri = item.change.uri;
+        await vscode.commands.executeCommand("vscode.open", uri, {
           preview: true,
           viewColumn: vscode.ViewColumn.Active,
         });

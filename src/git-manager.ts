@@ -1,4 +1,4 @@
-import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange, Remote } from './ext/git.d';
+import { Repository as GitRepository, Commit as GitCommit, API, Change as GitChange, Remote, Status } from './ext/git.d';
 import * as vscode from "vscode";
 import * as nodePath from 'path';
 import { promisify } from 'node:util';
@@ -130,6 +130,16 @@ export class GitManager {
   }
 
   async diffChange(change: Change): Promise<void> {
+    // For newly added files, just open the file instead of showing a diff
+    // because there's no parent version to compare against
+    if (change.status === Status.INDEX_ADDED) {
+      await vscode.commands.executeCommand("vscode.open", change.uri, {
+        preview: true,
+        viewColumn: vscode.ViewColumn.Active,
+      });
+      return;
+    }
+
     const leftSide = {
       uri: change.originalUri,
       label: change.commit.parentShortHash,
