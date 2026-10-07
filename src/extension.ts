@@ -55,6 +55,28 @@ export function activate(context: vscode.ExtensionContext) {
       }
     ),
 
+    vscode.commands.registerCommand("gitCommits.amendCommit", async () => {
+      const manager = gitCommitsProvider.manager;
+      if (!manager) {
+        return;
+      }
+
+      if (manager.repository.state.indexChanges.length < 1) {
+        return vscode.window.showInformationMessage(
+          "There are no staged changes to amend"
+        );
+      }
+
+      try {
+        // An empty message with amend makes the git extension use --no-edit
+        await manager.repository.commit("", { amend: true });
+      } catch (error: any) {
+        await vscode.window.showErrorMessage(
+          `Failed to amend commit: ${error.stderr || error.message}`
+        );
+      }
+    }),
+
     vscode.commands.registerCommand(
       "gitCommits.copyCommitHash",
       async (item: CommitNode) => {

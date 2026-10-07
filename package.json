@@ -74,6 +74,12 @@
         "category": "Git Commits"
       },
       {
+        "command": "gitCommits.amendCommit",
+        "title": "Commit (Amend)",
+        "icon": "$(check-all)",
+        "category": "Git Commits"
+      },
+      {
         "command": "gitCommits.copyCommitHash",
         "title": "Copy commit hash",
         "icon": "$(files)",
@@ -231,6 +237,10 @@
           "when": "false"
         },
         {
+          "command": "gitCommits.amendCommit",
+          "when": "false"
+        },
+        {
           "command": "gitCommits.copyCommitHash",
           "when": "false"
         },
@@ -336,6 +346,11 @@
           "command": "gitCommits.undoCommit",
           "when": "view == gitCommits.commits",
           "group": "navigation@1"
+        },
+        {
+          "command": "gitCommits.amendCommit",
+          "when": "view == gitCommits.commits",
+          "group": "navigation@0"
         },
         {
           "command": "gitCommits.commits.viewAsTree",
